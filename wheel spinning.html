@@ -1,21 +1,61 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Owner Spin Wheel</title>
+<title>Owner Spin Wheel | VMC Cricketer's</title>
 
 <style>
 body {
     margin:0;
     text-align:center;
-    font-family: Arial;
-    background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+    font-family:Arial, sans-serif;
+    background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
     color:white;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+}
+
+/* HEADER */
+.header {
+    background:linear-gradient(90deg,#1e3c72,#2a5298);
+    padding:14px 20px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.header h2 {
+    margin:0;
+    font-size:18px;
+}
+
+/* DASHBOARD BUTTON */
+.dashboard-btn {
+    background:#ffcc00;
+    color:#000;
+    border:none;
+    padding:9px 16px;
+    border-radius:20px;
+    font-size:14px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.dashboard-btn:hover {
+    background:#ffd633;
+}
+
+/* MAIN CONTENT */
+.container {
+    flex:1;
+    padding:10px 15px 25px;
 }
 
 /* TITLE */
-h2 {
+.container h2 {
     margin-top:20px;
 }
 
@@ -27,12 +67,15 @@ h2 {
     border-right:15px solid transparent;
     border-top:30px solid red;
     margin:20px auto -10px;
+    position:relative;
+    z-index:2;
 }
 
 /* CANVAS */
 canvas {
     margin-top:10px;
     max-width:90vw;
+    height:auto;
 }
 
 /* BUTTON */
@@ -44,6 +87,11 @@ button {
     border:none;
     border-radius:10px;
     cursor:pointer;
+    font-weight:bold;
+}
+
+button:hover {
+    opacity:0.9;
 }
 
 /* RESULT */
@@ -51,22 +99,88 @@ button {
     margin-top:15px;
     font-size:20px;
     color:#00ffcc;
+    font-weight:bold;
+}
+
+/* FOOTER */
+.footer {
+    background:linear-gradient(90deg,#1e3c72,#2a5298);
+    padding:12px 10px;
+    text-align:center;
+    font-size:14px;
+    margin-top:25px;
+}
+
+/* MOBILE RESPONSIVE */
+@media(max-width:480px) {
+
+    .header {
+        padding:12px;
+    }
+
+    .header h2 {
+        font-size:16px;
+    }
+
+    .dashboard-btn {
+        padding:8px 12px;
+        font-size:12px;
+    }
+
+    .container h2 {
+        font-size:20px;
+    }
+
+    canvas {
+        max-width:85vw;
+    }
+
+    #result {
+        font-size:18px;
+    }
+
+    .footer {
+        font-size:12px;
+    }
 }
 </style>
 </head>
 
 <body>
 
-<h2>🏏 Owner Spin Wheel</h2>
+<!-- HEADER -->
+<div class="header">
 
-<div class="pointer"></div>
+    <h2>🏏 Owner Spin Wheel</h2>
 
-<canvas id="wheel" width="320" height="320"></canvas>
+    <button class="dashboard-btn"
+        onclick="location.href='index.html'">
+        🏠 Dashboard
+    </button>
 
-<br>
-<button onclick="spin()">SPIN 🎡</button>
+</div>
 
-<div id="result">Winner: --</div>
+<!-- MAIN CONTENT -->
+<div class="container">
+
+    <h2>🎡 Select Your Owner</h2>
+
+    <div class="pointer"></div>
+
+    <canvas id="wheel" width="320" height="320"></canvas>
+
+    <br>
+
+    <button onclick="spin()">SPIN 🎡</button>
+
+    <div id="result">Winner: --</div>
+
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+    🏏 VMC Cricketer's © 2026 | Developed By KBU Software Pvt Ltd.
+</div>
 
 <script>
 
@@ -80,9 +194,11 @@ let spinning = false;
 
 /* DRAW WHEEL */
 function drawWheel(){
+
     const arc = (2 * Math.PI) / owners.length;
 
     for(let i=0;i<owners.length;i++){
+
         const start = angle + i * arc;
         const end = start + arc;
 
@@ -106,14 +222,19 @@ function drawWheel(){
 
 /* VOICE */
 function speak(name){
+
     let msg = new SpeechSynthesisUtterance("Winner is " + name);
     speechSynthesis.speak(msg);
+
 }
 
 /* SPIN FUNCTION */
 function spin(){
+
     if(spinning || owners.length === 0){
+
         if(owners.length === 0) alert("All owners selected!");
+
         return;
     }
 
@@ -131,12 +252,15 @@ function spin(){
     const targetAngle = (Math.PI * 3/2) - (randomIndex * arc) - (arc / 2);
 
     function animate(){
+
         spinTime += 30;
 
         if(spinTime >= spinDuration){
+
             angle = targetAngle;
             drawFinal(randomIndex);
             spinning = false;
+
             return;
         }
 
@@ -156,6 +280,7 @@ function spin(){
 
 /* FINAL RESULT */
 function drawFinal(index){
+
     ctx.clearRect(0,0,320,320);
     drawWheel();
 
