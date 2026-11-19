@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>VMC Cricketer's</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+/* ===== GLOBAL ===== */
+html, body {
+  height: 100%;
+  margin: 0;
+  font-family: "Segoe UI", sans-serif;
+  background: #f4f6fa;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+}
+
+/* ===== HEADER ===== */
+.header {
+  background: linear-gradient(90deg, #123b7a, #1e5aa8);
+  color: #fff;
+  padding: 14px 22px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header h1 {
+  font-size: 18px;
+  margin: 0;
+  white-space: nowrap;
+}
+
+/* Desktop Nav */
+.nav-desktop {
+  display: flex;
+  gap: 12px;
+}
+
+.nav-btn {
+  background: #ffeb3b;
+  color: #000;
+  text-decoration: none;
+  padding: 8px 18px;
+  border-radius: 22px;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.nav-btn:hover {
+  background: #ffd600;
+}
+
+/* Hamburger */
+.hamburger {
+  display: none;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+/* Mobile Menu */
+.mobile-menu {
+  display: none;
+  flex-direction: column;
+  background: #1e5aa8;
+}
+
+.mobile-menu a {
+  padding: 14px;
+  color: #fff;
+  text-decoration: none;
+  font-weight: 600;
+  border-bottom: 1px solid rgba(255,255,255,0.2);
+}
+
+.mobile-menu a:hover {
+  background: rgba(0,0,0,0.25);
+}
+
+/* ===== CONTENT ===== */
+.main-content {
+  flex: 1;
+  padding: 30px 15px;
+}
+
+.record-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 25px;
+  margin: 20px auto;
+  max-width: 520px;
+  text-align: center;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.1);
+}
+
+.record-card h3 {
+  margin-bottom: 12px;
+}
+
+.record-link {
+  display: inline-block;
+  margin-top: 10px;
+  font-size: 16px;
+  font-weight: 700;
+  color: #1e5aa8;
+  text-decoration: none;
+}
+
+.record-link:hover {
+  text-decoration: underline;
+}
+
+/* ===== FOOTER ===== */
+.footer {
+  background: linear-gradient(90deg, #123b7a, #1e5aa8);
+  color: #fff;
+  text-align: center;
+  padding: 12px;
+  font-size: 14px;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .nav-desktop {
+    display: none;
+  }
+  .hamburger {
+    display: block;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<!-- ===== HEADER ===== -->
+<div class="header">
+  <h1>🏏 VMC Cricketer's</h1>
+
+  <!-- ONLY DASHBOARD HERE -->
+  <div class="nav-desktop">
+    <a href="index.html" class="nav-btn">Dashboard</a>
+  </div>
+
+  <div class="hamburger" onclick="toggleMenu()">☰</div>
+</div>
+
+<!-- ===== MOBILE MENU ===== -->
+<div class="mobile-menu" id="mobileMenu">
+  <a href="index.html">Dashboard</a>
+</div>
+
+<!-- ===== MAIN CONTENT ===== -->
+<div class="main-content">
+
+     <div class="record-card">
+    <h3>Season – 1</h3>
+
+    <!-- 🔴 PUT YOUR ACTUAL LINK HERE -->
+    <a class="record-link"
+       href="https://cricheroes.com/tournament/1303130/jp-boys-cricket-tournament-league-season-1/matches/past-matches"
+       target="_blank">
+      View Season-1 Records →
+    </a>
+  </div>
+
+   <div class="record-card">
+    <h3>Season – 2</h3>
+
+    <!-- 🔴 PUT YOUR ACTUAL LINK HERE -->
+    <a class="record-link"
+       href="https://cricheroes.com/tournament/1431323/jp-boys-cricket-tournament-league-season-2/matches/past-matches"
+       target="_blank">
+      View Season-2 Records →
+    </a>
+  </div>
+
+  <div class="record-card">
+    <h3>Season – 3</h3>
+
+    <!-- 🔴 PUT YOUR ACTUAL LINK HERE -->
+    <a class="record-link"
+       href="https://cricheroes.com/tournament/1703280/jp-boys-cricket-tournament-season-3/matches/past-matches"
+       target="_blank">
+      View Season-3 Records →
+    </a>
+  </div>
+
+
+
+   <div class="record-card">
+    <h3>Season – 4</h3>
+
+    <!-- 🔴 PUT YOUR ACTUAL LINK HERE -->
+    <a class="record-link"
+       href="https://cricheroes.com/tournament/1976667/jp-boys-cricketers-tournament-season-4/matches/past-matches"
+       target="_blank">
+      View Season-4 Records →
+    </a>
+  </div>
+
+
+   <div class="record-card">
+    <h3>Season – 5</h3>
+
+    <!-- 🔴 PUT YOUR ACTUAL LINK HERE -->
+    <a class="record-link"
+       href="https://chshare.link/tournament/dfvv1F"
+       target="_blank">
+      Season-5 Records Available Soon.... →
+    </a>
+  </div>
+
+
+</div>
+
+<!-- ===== FOOTER ===== -->
+<div class="footer">
+🏏 VMC Cricketer's © 2026 | Developed By KBU Software Pvt Ltd.
+</div>
+
+<script>
+function toggleMenu(){
+  const menu = document.getElementById("mobileMenu");
+  menu.style.display = (menu.style.display === "flex") ? "none" : "flex";
+}
+</script>
+
+</body>
+</html>

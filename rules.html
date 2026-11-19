@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VMC Cricketer's Tournament Rules</title>
+
+<!-- PDF Library -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+<style>
+*{
+  box-sizing:border-box;
+  font-family:Segoe UI,sans-serif;
+}
+
+body{
+  margin:0;
+  background:#0b1c2d;
+  color:#fff;
+  display:flex;
+  flex-direction:column;
+  min-height:100vh;
+}
+
+/* HEADER */
+header{
+  background:linear-gradient(90deg,#1e3c72,#2a5298);
+  padding:12px 18px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.logo-section{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.logo-section img{
+  width:45px;
+  height:45px;
+  border-radius:50%;
+  object-fit:cover;
+  border:2px solid #ffd700;
+}
+
+.logo-section h2{
+  margin:0;
+  font-size:18px;
+}
+
+.nav-buttons{
+  display:flex;
+  gap:10px;
+}
+
+.nav-buttons a{
+  background:#ffd700;
+  color:#000;
+  padding:6px 14px;
+  border-radius:20px;
+  text-decoration:none;
+  font-size:14px;
+  font-weight:bold;
+  transition:0.3s;
+}
+
+.nav-buttons a:hover{
+  background:#ffcc00;
+}
+
+/* MAIN */
+.container{
+  flex:1;
+  max-width:900px;
+  margin:auto;
+  padding:20px;
+  width:100%;
+}
+
+.rules-box{
+  background:#102840;
+  padding:22px;
+  border-radius:14px;
+  box-shadow:0 0 20px rgba(0,0,0,0.5);
+    page-break-inside: avoid;
+}
+
+.rules-box h1{
+  text-align:center;
+  color:#ffd700;
+  margin-top:0;
+}
+
+.rules-box ul{
+  line-height:1.8;
+  margin-top:20px;
+  padding-left:18px;
+    page-break-inside: avoid;
+}
+
+.rules-box li{
+  margin-bottom:10px;
+    page-break-inside: avoid;
+}
+
+/* DOWNLOAD BUTTON */
+.download-btn{
+  margin-top:25px;
+  text-align:center;
+}
+
+.download-btn button{
+  padding:12px 20px;
+  border:none;
+  border-radius:8px;
+  background:#ffd700;
+  font-weight:bold;
+  cursor:pointer;
+  font-size:16px;
+  transition:0.3s;
+}
+
+.download-btn button:hover{
+  background:#ffcc00;
+}
+
+/* FOOTER */
+footer{
+  background:linear-gradient(90deg,#1e3c72,#2a5298);
+  padding:14px;
+  text-align:center;
+}
+
+/* RESPONSIVE */
+@media(max-width:600px){
+  header{
+    flex-direction:column;
+    gap:10px;
+    text-align:center;
+  }
+
+  .nav-buttons{
+    justify-content:center;
+  }
+
+  .logo-section h2{
+    font-size:15px;
+  }
+
+  .rules-box{
+    padding:16px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="logo-section">
+    <img src="assets/images/Logo.png" alt="JP Logo">
+    <h2>VMC Cricketer's Tournament Rules</h2>
+  </div>
+
+  <div class="nav-buttons">
+    <a href="index.html">🏠 Dashboard</a>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- This section will be converted into PDF -->
+  <div class="rules-box" id="rulesContent">
+
+    <h1>Season-1 Rules & Regulations</h1>
+
+    <!-- <ul>
+      <li>1️⃣ Each team must consist of 11 to 12 players.</li>
+      <li>2️⃣ All matches will be 8 overs per side.</li>
+      <li>3️⃣ Powerplay will be first 2 overs.</li>
+      <li>4️⃣ No ball = Free hit.</li>
+      <li>5️⃣ Umpire decision is final.</li>
+      <li>6️⃣ Misbehavior or abuse leads to disqualification.</li>
+      <li>7️⃣ Reporting time is 30 minutes before match.</li>
+      <li>8️⃣ Register player must be available for the match , if not available due to reason's they will not consider for the next Season's.</li>
+      <li>9️⃣ Rain interruption decisions by committee only.</li>
+      <li>🔟 Tournament committee decision is final.</li>
+    </ul> -->
+
+<ul>
+
+<li><b>1️⃣ Match Format:</b> Each match will be played with <b>8 overs per side</b>.</li>
+
+<li><b>2️⃣ Ball Rules:</b> A <b>new ball</b> will be used for each innings. If the ball is lost, damaged, or goes out of ground, a used ball will be used based on <b>umpire/organiser decision</b>.</li>
+
+<li><b>3️⃣ Match Delay:</b> If matches are delayed due to time or other reasons, overs may be reduced (2–6 overs per side). Final decision will be taken by the <b>organiser</b>.</li>
+
+<li><b>4️⃣ Player Participation:</b> All registered players <b>must play</b> in the tournament. Teams should rotate players in matches.</li>
+
+<li><b>5️⃣ Tie Matches:</b> In Eliminator, Semi-Final, or Final — if match is tied, a <b>Super Over (1 over)</b> will decide the winner.</li>
+
+<li><b>6️⃣ Umpire Decision:</b> <b>Final and binding.</b> No arguments will be accepted.</li>
+
+<li><b>7️⃣ No Extras:</b> <b>No LBW and No Leg Byes</b> in the tournament.</li>
+
+<li><b>8️⃣ Player Availability:</b> No replacements allowed. If a player is absent, the team must play with available players only.</li>
+
+<li><b>9️⃣ Bowling Rules:</b> No throwing or illegal bowling action. If warned by umpire, bowler may be <b>banned from bowling</b> for entire tournament.</li>
+
+<li><b>🔟 Runner Rules:</b> Only <b>1 runner per team</b> allowed under conditions. No runner allowed in <b>last over</b>. Runner must be from playing 11.</li>
+
+<li><b>1️⃣1️⃣ League Match Interruption:</b> If match is cancelled due to rain/light, <b>1 point each</b> will be awarded.</li>
+
+<li><b>1️⃣2️⃣ Knockout Interruption:</b> If Eliminator/Semi/Final cannot be played, <b>table topper will be winner</b>.</li>
+
+<li><b>1️⃣3️⃣ Final Match Issue:</b> If final is interrupted and cannot continue, <b>table topper wins</b>.</li>
+
+<li><b>1️⃣4️⃣ Communication:</b> Only <b>Captain</b> can speak with umpire. Others interfering may lead to <b>penalties</b> (fielders/overs reduction).</li>
+
+<li><b>1️⃣5️⃣ Performance Tracking:</b> Scores, MOM, MOS, Best Player etc. will be recorded using <b>CricHeroes App</b>.</li>
+
+<li><b>1️⃣6️⃣ Team Lock:</b> After auction, <b>no player swap/change</b> allowed.</li>
+
+<li><b>1️⃣7️⃣ Discipline:</b> No fighting, abuse, or arguments. Violators will be <b>removed from tournament</b>.</li>
+
+<li><b>1️⃣8️⃣ Responsibility:</b> Organisers are <b>not responsible</b> for personal belongings or unexpected incidents.</li>
+
+<li><b>1️⃣9️⃣ Misconduct:</b> Any intentional conflict or targeting will lead to <b>immediate suspension</b>.</li>
+
+<li><b>2️⃣0️⃣ Spirit:</b> We encourage <b>sportsmanship, enjoyment, and unity</b> throughout the tournament.</li>
+
+</ul>
+
+<hr style="margin:25px 0; border:1px solid #444">
+
+<h2 style="color:#ffd700; text-align:center;">📜 ಕನ್ನಡ ನಿಯಮಗಳು</h2>
+
+<ul>
+
+<li><b>1️⃣ ಪಂದ್ಯ ರೂಪ:</b> ಪ್ರತಿ ತಂಡಕ್ಕೆ <b>8 ಓವರ್ ಪಂದ್ಯ</b>.</li>
+
+<li><b>2️⃣ ಚೆಂಡು ನಿಯಮ:</b> ಪ್ರತಿ ಇನ್ನಿಂಗ್ಸ್‌ಗೆ ಹೊಸ ಚೆಂಡು. ಕಳೆದುಹೋದರೆ ಅಥವಾ ಹಾನಿಯಾದರೆ, ಅಂಪೈರ್/ಆಯೋಜಕರ ನಿರ್ಧಾರ.</li>
+
+<li><b>3️⃣ ವಿಳಂಬ:</b> ಸಮಯದ ಆಧಾರದ ಮೇಲೆ ಪಂದ್ಯ ಓವರ್‌ಗಳು ಕಡಿಮೆ ಮಾಡಬಹುದು.</li>
+
+<li><b>4️⃣ ಆಟಗಾರರು:</b> ನೋಂದಾಯಿತ ಎಲ್ಲಾ ಆಟಗಾರರು ಪಂದ್ಯಗಳಲ್ಲಿ ಭಾಗವಹಿಸಬೇಕು.</li>
+
+<li><b>5️⃣ ಸಮ ಪಂದ್ಯ:</b> ಎಲಿಮಿನೇಟರ್/ಸೆಮಿಫೈನಲ್/ಫೈನಲ್‌ನಲ್ಲಿ <b>ಸೂಪರ್ ಓವರ್</b>.</li>
+
+<li><b>6️⃣ ಅಂಪೈರ್ ನಿರ್ಧಾರ:</b> ಅಂತಿಮ ನಿರ್ಧಾರ — ಯಾವುದೇ ವಾದವಿಲ್ಲ.</li>
+
+<li><b>7️⃣ ಎಕ್ಸ್ಟ್ರಾಸ್ ಇಲ್ಲ:</b> LBW ಮತ್ತು ಲೆಗ್ ಬೈಸ್ ಇಲ್ಲ.</li>
+
+<li><b>8️⃣ ಆಟಗಾರ ಲಭ್ಯತೆ:</b> ಬದಲಾವಣೆ ಇಲ್ಲ — ಲಭ್ಯ ಆಟಗಾರರೊಂದಿಗೆ ಆಡಬೇಕು.</li>
+
+<li><b>9️⃣ ಬೌಲಿಂಗ್:</b> ತಪ್ಪು ಆಕ್ಷನ್ ಕಂಡುಬಂದರೆ ಬೌಲಿಂಗ್ ನಿಷೇಧ.</li>
+
+<li><b>🔟 ರನ್ನರ್:</b> ಒಂದು ತಂಡಕ್ಕೆ ಒಂದು ರನ್ನರ್ ಮಾತ್ರ, ಕೊನೆಯ ಓವರ್‌ನಲ್ಲಿ ಇಲ್ಲ.</li>
+
+<li><b>1️⃣1️⃣ ಮಳೆ:</b> ಲೀಗ್ ಪಂದ್ಯ ರದ್ದು — ಎರಡೂ ತಂಡಗಳಿಗೆ 1 ಅಂಕ.</li>
+
+<li><b>1️⃣2️⃣ ನಾಕೌಟ್:</b> ಪಂದ್ಯ ಸಾಧ್ಯವಾಗದಿದ್ದರೆ ಟೇಬಲ್ ಟಾಪರ್ ಗೆಲುವು.</li>
+
+<li><b>1️⃣3️⃣ ಫೈನಲ್:</b> ಪೂರ್ಣಗೊಳ್ಳದಿದ್ದರೆ ಟೇಬಲ್ ಟಾಪರ್ ಗೆಲುವು.</li>
+
+<li><b>1️⃣4️⃣ ಸಂವಹನ:</b> ಕೇವಲ ಕ್ಯಾಪ್ಟನ್ ಅಂಪೈರ್ ಜೊತೆ ಮಾತನಾಡಬಹುದು.</li>
+
+<li><b>1️⃣5️⃣ ದಾಖಲೆ:</b> ಎಲ್ಲಾ ದಾಖಲೆಗಳು CricHeroes ಆಪ್ ಮೂಲಕ.</li>
+
+<li><b>1️⃣6️⃣ ತಂಡ ಬದಲಾವಣೆ ಇಲ್ಲ:</b> ಹರಾಜಿನ ನಂತರ ಬದಲಾವಣೆ ಇಲ್ಲ.</li>
+
+<li><b>1️⃣7️⃣ ಶಿಸ್ತಿನ ನಿಯಮ:</b> ಜಗಳ ಅಥವಾ ದುರ್ವ್ಯವಹಾರಕ್ಕೆ ನಿರ್ಬಂಧ.</li>
+
+<li><b>1️⃣8️⃣ ಹೊಣೆಗಾರಿಕೆ:</b> ವೈಯಕ್ತಿಕ ವಸ್ತುಗಳಿಗೆ ಆಯೋಜಕರು ಹೊಣೆಗಾರರಲ್ಲ.</li>
+
+<li><b>1️⃣9️⃣ ದುರುದ್ದೇಶ:</b> ಉದ್ದೇಶಪೂರ್ವಕ ಸಮಸ್ಯೆ → ನಿಷ್ಕಾಸ.</li>
+
+<li><b>2️⃣0️⃣ ಉದ್ದೇಶ:</b> ಎಲ್ಲರೂ ಆನಂದದಿಂದ ಮತ್ತು ಒಗ್ಗಟ್ಟಿನಿಂದ ಆಡಬೇಕು.</li>
+
+</ul>
+
+
+  </div>
+
+  <div class="download-btn">
+    <button onclick="downloadRules()">📥 Download Rules PDF</button>
+  </div>
+
+</div>
+
+<footer>
+ 🏏 VMC Cricketer's © 2026 | Developed By KBU Software Pvt Ltd.
+</footer>
+
+<script>
+// function downloadRules(){
+
+//   const element = document.getElementById("rulesContent");
+
+//   const opt = {
+//     margin: 0.5,
+//     filename: 'JP_Boys_Season4_Rules.pdf',
+//     image: { type: 'jpeg', quality: 0.98 },
+//     html2canvas: { scale: 2 },
+//     jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+//   };
+
+//   html2pdf().set(opt).from(element).save();
+// }
+
+
+
+
+
+function downloadRules(){
+
+  const element = document.getElementById("rulesContent");
+
+  const opt = {
+    margin:       0.4,
+    filename:     'JP_Boys_Season4_Rules.pdf',
+    image:        { type: 'jpeg', quality: 1 },
+    html2canvas:  { 
+      scale: 3,
+      useCORS: true,
+      scrollY: 0
+    },
+    jsPDF:        { 
+      unit: 'in', 
+      format: 'a4', 
+      orientation: 'portrait' 
+    },
+    pagebreak: {
+      mode: ['avoid-all', 'css', 'legacy']
+    }
+  };
+
+  html2pdf()
+    .set(opt)
+    .from(element)
+    .toPdf()
+    .get('pdf')
+    .then(function (pdf) {
+
+      // 🔥 Force proper multi-page handling
+      const totalPages = pdf.internal.getNumberOfPages();
+
+      for (let i = 1; i <= totalPages; i++) {
+        pdf.setPage(i);
+      }
+
+    })
+    .save();
+}
+</script>
+
+</body>
+
+</html>

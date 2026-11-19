@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Admin Control</title>
+
+<style>
+body{
+  background:#0b1c2d;
+  color:#fff;
+  font-family:Segoe UI;
+  display:flex;
+  justify-content:center;
+  align-items:flex-start; /* ✅ changed */
+  height:100vh;
+  overflow:hidden; /* prevent full page scroll */
+}
+
+.box{
+  background:#102840;
+  padding:20px;
+  border-radius:14px;
+  width:340px;
+
+  max-height:90vh;   /* ✅ LIMIT HEIGHT */
+  overflow-y:auto;   /* ✅ SCROLL INSIDE */
+}
+
+.box::-webkit-scrollbar{
+  width:6px;
+}
+.box::-webkit-scrollbar-thumb{
+  background:#3498db;
+  border-radius:10px;
+}
+
+h3{text-align:center}
+
+label{
+  display:flex;
+  justify-content:space-between;
+  margin:12px 0;
+}
+
+button{
+  width:100%;
+  padding:10px;
+  border:none;
+  border-radius:10px;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+button.green{background:green;color:#fff}
+button.yellow{background:#ffd700}
+button.red{background:#d9534f;color:#fff}
+button.blue{background:#3498db;color:#fff}
+
+input[type="password"],
+input[type="email"]{
+  width:100%;
+  padding:10px;
+  border-radius:10px;
+  border:none;
+  margin-bottom:10px;
+}
+input[type="email"]{background:orange}
+
+/* ⭐ NEW NOTIFY PANEL */
+.notify{
+  background:#173d61;
+  padding:14px;
+  border-radius:12px;
+  margin-bottom:14px;
+  border-left:5px solid #ffd700;
+}
+
+.small{
+  font-size:13px;
+  opacity:0.9;
+}
+
+
+
+/* 🔥 SIDE BY SIDE LAYOUT */
+.topRow{
+  display:flex;
+  gap:12px;
+  margin-bottom:14px;
+}
+
+/* both cards equal width */
+.topRow .notify{
+  flex:1;
+  max-height:200px;   /* prevent overflow */
+  overflow-y:auto;
+}
+
+/* MOBILE RESPONSIVE */
+@media(max-width:600px){
+  .topRow{
+    flex-direction:column;
+  }
+}
+
+.notify::-webkit-scrollbar{
+  width:5px;
+}
+.notify::-webkit-scrollbar-thumb{
+  background:#3498db;
+  border-radius:10px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="box" id="loginBox">
+  <h3>Admin Login</h3>
+  <input type="email" id="id" placeholder="Admin email">
+  <input type="password" id="pwd" placeholder="Admin Password">
+  <button class="green" onclick="login()">Login</button>
+</div>
+
+<div class="box" id="controlBox" style="display:none">
+
+  
+
+
+  <!-- ⭐ ADVANCED NOTIFICATION PANEL -->
+ <!-- ADD THIS NEW ROW -->
+<div class="topRow">
+
+  <!-- LEFT: REGISTRATION STATUS -->
+  <div class="notify">
+    <b>📊 Registration Status</b>
+    <div id="notifyContent">Loading...</div>
+  </div>
+
+  <!-- RIGHT: NOTIFICATIONS -->
+  <div class="notify">
+    <b>📢 Sent Notifications</b>
+    <div id="notificationList" class="small">Loading...</div>
+  </div>
+
+</div>
+
+  <h3>Auction Control</h3>
+
+<!-- 🗑 MANAGE PLAYERS CARD -->
+<div class="notify" style="margin-bottom:14px;">
+  <b>🗑 Manage Players</b>
+  
+  <div id="adminPlayerList" style="
+    margin-top:10px;
+    max-height:250px;
+    overflow-y:auto;
+  ">
+    Loading...
+  </div>
+</div>
+
+<label>Auction ON <input type="checkbox" id="auctionToggle"></label>
+<label>Bidding Enabled <input type="checkbox" id="bidToggle"></label>
+<label>Enable Player Reset <input type="checkbox" id="resetToggle"></label>
+<label>Owner Editing <input type="checkbox" id="ownerToggle"></label>
+
+<button class="yellow" onclick="goVerify()">Verify Payments</button>
+
+<button class="red" id="toggleRegBtn">Disable Registration</button>
+
+<button class="green" onclick="goAuction()">Go to Auction</button>
+
+<button onclick="clearSoldPlayers()">Clear Sold Players</button>
+<button class="red" onclick="resetAllPlayers()">RESET ALL PLAYERS</button>
+<button class="blue" onclick="resetAuctionSeason()">RESET AUCTION SEASON</button>
+<button onclick="resetMonthlyKit()">Reset Monthly Kit Payments</button>
+<button class="blue" onclick="openNotifyBox()">📢 Send Notification</button>
+
+
+
+
+
+
+
+
+
+
+
+<!-- 🔔 NOTIFICATION POPUP -->
+<div id="notifyPopup" style="
+  display:none;
+  position:fixed;
+  top:0;left:0;
+  width:100%;height:100%;
+  background:rgba(0,0,0,0.7);
+  justify-content:center;
+  align-items:center;
+  z-index:9999;
+">
+  <div style="
+    background:#102840;
+    padding:20px;
+    border-radius:12px;
+    width:320px;
+  ">
+    <h3>Send Notification</h3>
+
+    <input type="text" id="notifTitle" placeholder="Title" style="width:100%;margin-bottom:10px;padding:10px;border-radius:8px;border:none;">
+
+    <textarea id="notifBody" placeholder="Message" style="width:100%;padding:10px;border-radius:8px;border:none;height:80px;"></textarea>
+
+    <br><br>
+
+    <button class="green" onclick="sendNotification()">Send</button>
+    <button class="red" onclick="closeNotifyBox()">Cancel</button>
+  </div>
+</div>
+
+<script>
+document.getElementById("resetToggle").onchange = e =>
+  localStorage.setItem("playerResetEnabled", e.target.checked);
+
+document.getElementById("resetToggle").checked =
+  localStorage.getItem("playerResetEnabled") === "true";
+
+const ADMIN_PASSWORD = "Umesh@09";
+
+function login(){
+  if(document.getElementById("pwd").value === ADMIN_PASSWORD){
+    localStorage.setItem("isAdmin","true");
+    loginBox.style.display="none";
+    controlBox.style.display="block";
+    loadFlags();
+  }else alert("Wrong password");
+}
+
+function loadFlags(){
+  auctionToggle.checked=localStorage.getItem("auctionEnabled")==="true";
+  bidToggle.checked=localStorage.getItem("biddingEnabled")==="true";
+}
+
+auctionToggle.onchange=e=>localStorage.setItem("auctionEnabled",e.target.checked);
+bidToggle.onchange=e=>localStorage.setItem("biddingEnabled",e.target.checked);
+
+function goAuction(){ window.location.href="auction.html"; }
+function goVerify(){ window.location.href="verify.html"; }
+</script>
+
+
+<script type="module">
+import { initializeApp } from
+"https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
+
+import {
+  getFirestore,
+  collection,
+  getDocs,
+  getDoc,  
+  deleteDoc,
+  doc,
+  updateDoc,
+  setDoc,
+  onSnapshot
+} from
+"https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
+
+const app = initializeApp({
+  apiKey: "AIzaSyBdlkwG56G7QJSWR9SI2e1LarOUxWg8lW4",
+  authDomain: "jp-boys.firebaseapp.com",
+  projectId: "jp-boys"
+});
+const db = getFirestore(app);
+
+
+
+
+
+/* =============================
+   GLOBAL REGISTRATION TOGGLE
+============================= */
+/* =============================
+   GLOBAL REGISTRATION TOGGLE
+   WITH CONFIRMATION MESSAGE
+============================= */
+
+const toggleBtn = document.getElementById("toggleRegBtn");
+
+async function refreshToggleText(){
+
+  const snap = await getDoc(doc(db,"settings","registration"));
+
+  const open = snap.exists()
+    ? snap.data().open !== false
+    : true;
+
+  toggleBtn.textContent = open
+    ? "Disable Registration"
+    : "Enable Registration";
+}
+
+
+/* CLICK HANDLER */
+
+toggleBtn.onclick = async ()=>{
+
+  const ref = doc(db,"settings","registration");
+  const snap = await getDoc(ref);
+
+  const open = snap.exists()
+    ? snap.data().open !== false
+    : true;
+
+  /* ⭐ Confirmation Dialog */
+  const confirmMsg = open
+    ? "Do you want to DISABLE registration?"
+    : "Do you want to ENABLE registration?";
+
+  if(!confirm(confirmMsg)) return;
+
+  /* ⭐ Update Firestore */
+  await setDoc(ref,{ open: !open },{ merge:true });
+
+  /* ⭐ Update Button Text */
+  refreshToggleText();
+};
+
+
+/* Initialize Button Text */
+refreshToggleText();
+
+
+
+
+/* 🔊 SOUND */
+function playAlert(){
+  const ctx=new (window.AudioContext||window.webkitAudioContext)();
+  const osc=ctx.createOscillator();
+  const gain=ctx.createGain();
+  osc.frequency.value=880;
+  osc.connect(gain);
+  gain.connect(ctx.destination);
+  osc.start();
+  gain.gain.exponentialRampToValueAtTime(0.00001, ctx.currentTime+0.6);
+}
+
+window.addEventListener("click",()=>{
+ const ctx=new(window.AudioContext||window.webkitAudioContext)();
+ ctx.resume();
+},{once:true});
+
+
+/* ⭐ REALTIME DASHBOARD STATUS */
+let initialized=false;
+
+onSnapshot(collection(db,"players"), snap=>{
+
+  const players=[];
+  snap.forEach(d=>players.push(d.data()));
+
+  players.sort((a,b)=>b.createdAt-a.createdAt);
+
+  const total=players.length;
+  const latest=players[0]?.name || "None";
+  const lastFive=players.slice(0,5);
+
+  notifyContent.innerHTML=`
+    Total Registered : <b>${total}</b><br>
+    Latest Player : <b>${latest}</b><br><br>
+
+    <div class="small">
+    Last 5 Registered:<br>
+    ${ lastFive.length
+      ? lastFive.map(p=>"• "+p.name).join("<br>")
+      : "No registrations yet"
+    }
+    </div>
+  `;
+
+  if(initialized){
+    playAlert();
+  }
+
+  initialized=true;
+});
+
+
+/* OWNER TOGGLE */
+ownerToggle.onchange = async e=>{
+ await setDoc(doc(db,"settings","ownerControl"),{
+   editingEnabled:e.target.checked
+ });
+};
+
+
+/* EXISTING FUNCTIONS — UNCHANGED */
+window.resetAllPlayers = async () => {
+ if(localStorage.getItem("isAdmin")!=="true") return;
+ if(localStorage.getItem("playerResetEnabled")!=="true"){
+   alert("Enable Player Reset first"); return;
+ }
+ if(!confirm("Delete ALL players?")) return;
+
+ const snap = await getDocs(collection(db,"players"));
+ for(const d of snap.docs){
+   await deleteDoc(doc(db,"players",d.id));
+ }
+ alert("All players deleted.");
+};
+
+window.clearSoldPlayers = async () => {
+ const snap = await getDocs(collection(db,"players"));
+ const jobs=[];
+ snap.forEach(d=>{
+   if(d.data().sold===true)
+     jobs.push(deleteDoc(doc(db,"players",d.id)));
+ });
+ await Promise.all(jobs);
+ alert("Sold players cleared");
+};
+
+// window.resetAuctionSeason = async () => {
+//  if(!confirm("Reset balances + sold data?")) return;
+
+//  const teamSnap = await getDocs(collection(db,"teams"));
+//  const jobs=[];
+
+//  teamSnap.forEach(t=>{
+//    jobs.push(updateDoc(doc(db,"teams",t.id),{
+//      money:100000,
+//      players:[]
+//    }));
+//  });
+
+//  const playerSnap = await getDocs(collection(db,"players"));
+//  playerSnap.forEach(p=>{
+//    jobs.push(updateDoc(doc(db,"players",p.id),{
+//      sold:false,
+//      soldAmount:null,
+//      soldTeam:null,
+//      soldAt:null
+//    }));
+//  });
+
+//  await Promise.all(jobs);
+//  alert("Auction fully reset ✅");
+// };
+
+
+
+
+
+window.resetAuctionSeason = async () => {
+
+ if(!confirm("Reset balances + sold data?")) return;
+
+ const jobs=[];
+
+ /* 1️⃣ Reset Team Money */
+ const teamSnap = await getDocs(collection(db,"teams"));
+ teamSnap.forEach(t=>{
+   jobs.push(updateDoc(doc(db,"teams",t.id),{
+     money:100000
+   }));
+ });
+
+ /* 2️⃣ Reset Player Sold Status */
+ const playerSnap = await getDocs(collection(db,"players"));
+ playerSnap.forEach(p=>{
+   jobs.push(updateDoc(doc(db,"players",p.id),{
+     sold:false,
+     soldAmount:null,
+     soldTeam:null,
+     soldAt:null
+   }));
+ });
+
+ /* 3️⃣ 🔥 IMPORTANT — DELETE teamPlayers COLLECTION */
+ const teamPlayersSnap = await getDocs(collection(db,"teamPlayers"));
+ teamPlayersSnap.forEach(tp=>{
+   jobs.push(deleteDoc(doc(db,"teamPlayers",tp.id)));
+ });
+
+ await Promise.all(jobs);
+
+ alert("Auction fully reset ✅ (Balances + Sold Data Cleared)");
+
+};
+
+
+/* Monthlykitpayment*/
+
+window.resetMonthlyKit = async function(){
+  const confirmReset = confirm("Are you sure you want to reset all Monthly Kit Payments?");
+  if(!confirmReset) return;
+
+  try{
+    const paymentsSnap = await getDocs(collection(db,"payments"));
+    const paymentDeletes = paymentsSnap.docs.map(d =>
+      deleteDoc(doc(db,"payments", d.id))
+    );
+
+    const expensesSnap = await getDocs(collection(db,"expenses"));
+    const expenseDeletes = expensesSnap.docs.map(d =>
+      deleteDoc(doc(db,"expenses", d.id))
+    );
+
+    await Promise.all([...paymentDeletes, ...expenseDeletes]);
+
+    alert("Monthly Kit Payments Reset Successfully ✅");
+
+  }catch(error){
+    console.error(error);
+    alert("Error while resetting ❌");
+  }
+};
+
+
+
+
+/* ================= SEND NOTIFICATION ================= */
+
+window.openNotifyBox = function(){
+  document.getElementById("notifyPopup").style.display = "flex";
+};
+
+window.closeNotifyBox = function(){
+  document.getElementById("notifyPopup").style.display = "none";
+};
+
+window.sendNotification = async function(){
+
+  const title = document.getElementById("notifTitle").value.trim();
+  const body = document.getElementById("notifBody").value.trim();
+
+  if(!title || !body){
+    alert("Enter title and message");
+    return;
+  }
+
+  try{
+
+    // ✅ SAVE TO FIRESTORE (for bell notification)
+    await setDoc(doc(collection(db,"notifications")), {
+      title: title,
+      body: body,
+      time: Date.now(),
+      type: "admin"   // ✅ ADD THIS LINE
+    });
+
+    alert("✅ Notification Sent");
+
+    closeNotifyBox();
+
+    document.getElementById("notifTitle").value="";
+    document.getElementById("notifBody").value="";
+
+  }catch(e){
+    console.error(e);
+    alert("❌ Failed to send");
+  }
+};
+
+
+/* ================= LOAD & DELETE NOTIFICATIONS ================= */
+
+import { query, orderBy } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
+
+const notifContainer = document.getElementById("notificationList");
+
+onSnapshot(
+  query(collection(db, "notifications"), orderBy("time", "desc")),
+  (snap) => {
+
+    if(snap.empty){
+      notifContainer.innerHTML = "No notifications";
+      return;
+    }
+
+    let html = "";
+    let count = 0;
+
+    snap.forEach(docSnap => {
+
+      if(count >= 5) return; // ✅ LIMIT TO 5 ONLY
+
+      const data = docSnap.data();
+
+      // 🔥 SHORT MESSAGE (SAFE)
+      const shortMsg = data.body.length > 35
+        ? data.body.substring(0, 35) + "..."
+        : data.body;
+
+      html += `
+        <div style="
+          background:#0f2f4a;
+          padding:8px;
+          border-radius:8px;
+          margin-bottom:8px;
+        ">
+          <b>${data.title}</b><br>
+
+          <span style="
+            color:#ccc;
+            cursor:pointer;
+            display:block;
+            margin-top:2px;
+          "
+          onclick="showFullMsg(\`${data.body.replace(/`/g, "\\`")}\`)">
+            ${shortMsg}
+          </span>
+
+          <button 
+            style="
+              margin-top:6px;
+              background:red;
+              color:#fff;
+              border:none;
+              padding:4px 8px;
+              border-radius:6px;
+              cursor:pointer;
+              font-size:12px;
+            "
+            onclick="deleteNotification('${docSnap.id}')"
+          >
+            ❌ Delete
+          </button>
+        </div>
+      `;
+
+      count++;
+    });
+
+    notifContainer.innerHTML = html;
+  }
+);
+
+/* DELETE FUNCTION */
+window.deleteNotification = async function(id){
+
+  if(!confirm("Delete this notification?")) return;
+
+  try{
+    await deleteDoc(doc(db, "notifications", id));
+    alert("Deleted ✅");
+  }catch(e){
+    console.error(e);
+    alert("Delete failed ❌");
+  }
+};
+
+window.showFullMsg = function(msg){
+  alert(msg);
+};
+
+
+
+
+/* ================= PLAYER DELETE (ADMIN ONLY) ================= */
+
+const adminList = document.getElementById("adminPlayerList");
+
+// 🔥 REALTIME PLAYER LIST
+onSnapshot(collection(db,"players"), (snap)=>{
+
+  if(!adminList) return;
+
+  if(snap.empty){
+    adminList.innerHTML = "No players found";
+    return;
+  }
+
+  let html = "";
+
+  snap.forEach(docSnap => {
+
+    const p = docSnap.data();
+
+    html += `
+      <div style="
+        background:#0f2f4a;
+        padding:10px;
+        border-radius:10px;
+        margin-bottom:10px;
+      ">
+        <b>${p.name || "No Name"}</b><br>
+        📞 ${p.mobile || "-"}<br>
+        Role: ${p.role || "-"}<br>
+
+        <button 
+          style="
+            margin-top:6px;
+            background:red;
+            color:#fff;
+            border:none;
+            padding:6px 10px;
+            border-radius:6px;
+            cursor:pointer;
+          "
+          onclick="deletePlayer('${docSnap.id}')"
+        >
+          ❌ Delete Player
+        </button>
+      </div>
+    `;
+  });
+
+  adminList.innerHTML = html;
+});
+
+
+// 🔥 DELETE FUNCTION
+window.deletePlayer = async function(id){
+
+  // ✅ SECURITY CHECK
+  if(localStorage.getItem("isAdmin") !== "true"){
+    alert("Not authorized ❌");
+    return;
+  }
+
+  if(!confirm("Are you sure to delete this player?")) return;
+
+  try{
+    await deleteDoc(doc(db,"players", id));
+    alert("Player deleted ✅");
+  }catch(e){
+    console.error(e);
+    alert("Delete failed ❌");
+  }
+};
+
+
+</script>
+</body>
+</html>

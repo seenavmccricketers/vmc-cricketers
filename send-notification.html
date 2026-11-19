@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>VMC Cricketer's</title>
+</head>
+<body style="font-family:sans-serif;padding:20px">
+
+<h2>📢 Send Notification</h2>
+
+<input id="title" placeholder="Enter Title" style="width:100%;padding:10px;margin-bottom:10px">
+
+<textarea id="body" placeholder="Enter Message" style="width:100%;padding:10px;height:100px"></textarea>
+
+<br><br>
+
+<button onclick="sendNotification()" style="padding:10px 20px;background:green;color:#fff;border:none;border-radius:5px">
+  Send 🚀
+</button>
+
+<p id="status"></p>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
+import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
+
+const app = initializeApp({
+  apiKey: "AIzaSyBIY7j6h-3BcauIWe7hPp6Z4EpZ4vIAGlI",
+
+  authDomain: "vmccricketers.firebaseapp.com",
+
+  projectId: "vmccricketers",
+
+
+
+});
+
+const db = getFirestore(app);
+
+window.sendNotification = async function(){
+
+  const title = document.getElementById("title").value;
+  const body = document.getElementById("body").value;
+  const status = document.getElementById("status");
+
+  if(!title || !body){
+    alert("Enter title & message bro");
+    return;
+  }
+
+  try{
+
+    await addDoc(collection(db,"notifications"),{
+      title: title,
+      body: body,
+      time: serverTimestamp()
+    });
+
+    status.innerText = "✅ Notification sent!";
+    
+    document.getElementById("title").value="";
+    document.getElementById("body").value="";
+
+  }catch(e){
+    console.log(e);
+    status.innerText = "❌ Failed";
+  }
+}
+</script>
+
+</body>
+</html>

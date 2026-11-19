@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Owner Spin Wheel</title>
+
+<style>
+body {
+    margin:0;
+    text-align:center;
+    font-family: Arial;
+    background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+    color:white;
+}
+
+/* TITLE */
+h2 {
+    margin-top:20px;
+}
+
+/* POINTER (TOP - DOWN) */
+.pointer {
+    width:0;
+    height:0;
+    border-left:15px solid transparent;
+    border-right:15px solid transparent;
+    border-top:30px solid red;
+    margin:20px auto -10px;
+}
+
+/* CANVAS */
+canvas {
+    margin-top:10px;
+    max-width:90vw;
+}
+
+/* BUTTON */
+button {
+    margin-top:20px;
+    padding:12px 25px;
+    font-size:18px;
+    background:gold;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+}
+
+/* RESULT */
+#result {
+    margin-top:15px;
+    font-size:20px;
+    color:#00ffcc;
+}
+</style>
+</head>
+
+<body>
+
+<h2>🏏 Owner Spin Wheel</h2>
+
+<div class="pointer"></div>
+
+<canvas id="wheel" width="320" height="320"></canvas>
+
+<br>
+<button onclick="spin()">SPIN 🎡</button>
+
+<div id="result">Winner: --</div>
+
+<script>
+
+let owners = ["VMC1 ","VMC2","VMC3","VMC4","VMC5","VMC6","VMC7","VMC8","VMC9","VMC10"];
+
+const canvas = document.getElementById("wheel");
+const ctx = canvas.getContext("2d");
+
+let angle = 0;
+let spinning = false;
+
+/* DRAW WHEEL */
+function drawWheel(){
+    const arc = (2 * Math.PI) / owners.length;
+
+    for(let i=0;i<owners.length;i++){
+        const start = angle + i * arc;
+        const end = start + arc;
+
+        // slice
+        ctx.beginPath();
+        ctx.fillStyle = i % 2 === 0 ? "#ff9800" : "#f44336";
+        ctx.moveTo(160,160);
+        ctx.arc(160,160,160,start,end);
+        ctx.fill();
+
+        // text
+        ctx.save();
+        ctx.translate(160,160);
+        ctx.rotate(start + arc/2);
+        ctx.fillStyle = "#fff";
+        ctx.font = "bold 14px Arial";
+        ctx.fillText(owners[i], 80, 5);
+        ctx.restore();
+    }
+}
+
+/* VOICE */
+function speak(name){
+    let msg = new SpeechSynthesisUtterance("Winner is " + name);
+    speechSynthesis.speak(msg);
+}
+
+/* SPIN FUNCTION */
+function spin(){
+    if(spinning || owners.length === 0){
+        if(owners.length === 0) alert("All owners selected!");
+        return;
+    }
+
+    spinning = true;
+
+    const arc = (2 * Math.PI) / owners.length;
+    const randomIndex = Math.floor(Math.random() * owners.length);
+
+    let spinTime = 0;
+    let spinDuration = Math.random() * 2000 + 3000;
+
+    let startAngle = angle;
+
+    // 🎯 target alignment (top pointer)
+    const targetAngle = (Math.PI * 3/2) - (randomIndex * arc) - (arc / 2);
+
+    function animate(){
+        spinTime += 30;
+
+        if(spinTime >= spinDuration){
+            angle = targetAngle;
+            drawFinal(randomIndex);
+            spinning = false;
+            return;
+        }
+
+        let progress = spinTime / spinDuration;
+        let ease = 1 - Math.pow(1 - progress, 3);
+
+        angle = startAngle + ease * (targetAngle + Math.PI * 6);
+
+        ctx.clearRect(0,0,320,320);
+        drawWheel();
+
+        requestAnimationFrame(animate);
+    }
+
+    animate();
+}
+
+/* FINAL RESULT */
+function drawFinal(index){
+    ctx.clearRect(0,0,320,320);
+    drawWheel();
+
+    let winner = owners[index];
+
+    document.getElementById("result").innerText = "Winner: " + winner + " 🏆";
+
+    speak(winner);
+
+    // remove winner (no repeat)
+    owners.splice(index,1);
+}
+
+/* INIT */
+drawWheel();
+
+</script>
+
+</body>
+</html>

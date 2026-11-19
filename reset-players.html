@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Reset Players</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+body{
+  background:#0b1c2d;
+  color:#fff;
+  font-family:Segoe UI;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+}
+.card{
+  background:#102840;
+  padding:30px;
+  border-radius:16px;
+  text-align:center;
+}
+button{
+  background:#d9534f;
+  color:#fff;
+  border:none;
+  padding:12px 20px;
+  border-radius:10px;
+  font-size:16px;
+  font-weight:bold;
+  cursor:pointer;
+}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+  <h2>⚠️ Reset All Players</h2>
+  <p>This will delete all players and allow fresh registration.</p>
+  <button onclick="resetAllPlayers()">RESET ALL PLAYERS</button>
+</div>
+
+<script type="module">
+import { initializeApp } from
+"https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
+import {
+  getFirestore,
+  collection,
+  getDocs,
+  deleteDoc,
+   updateDoc,
+  doc
+} from
+"https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
+
+/* 🔐 ADMIN CHECK */
+if(localStorage.getItem("isAdmin") !== "true"){
+  alert("Admin access only");
+  location.href = "index.html";
+}
+
+/* 🔥 FIREBASE */
+const app = initializeApp({
+  
+  apiKey: "AIzaSyBIY7j6h-3BcauIWe7hPp6Z4EpZ4vIAGlI",
+
+  authDomain: "vmccricketers.firebaseapp.com",
+
+  projectId: "vmccricketers",
+
+  storageBucket: "vmccricketers.firebasestorage.app",
+
+  messagingSenderId: "241813165395",
+
+  appId: "1:241813165395:web:ffd84d7209529fd272bda6"
+
+});
+const db = getFirestore(app);
+
+/* 🔁 RESET ALL PLAYERS */
+window.resetAllPlayers = async () => {
+
+  if(!confirm("This will DELETE ALL PLAYERS. Continue?")) return;
+
+  const snap = await getDocs(collection(db,"players"));
+
+  snap.forEach(async d => {
+    await deleteDoc(doc(db,"players",d.id));
+  });
+
+  alert("All players deleted. Fresh registration enabled.");
+};
+</script>
+
+</body>
+</html>

@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>UI Management</title>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Segoe UI, sans-serif;
+}
+
+body{
+
+    background:#081b29;
+    color:white;
+
+}
+
+/* HEADER */
+
+.header{
+
+    background:#102840;
+    padding:20px;
+    text-align:center;
+    font-size:28px;
+    font-weight:bold;
+    box-shadow:0 3px 10px rgba(0,0,0,.4);
+
+}
+
+.header span{
+
+    color:#00d4ff;
+
+}
+
+/* CONTAINER */
+
+.container{
+
+    width:95%;
+    max-width:1200px;
+    margin:30px auto;
+
+}
+
+/* GRID */
+
+.grid{
+
+    display:grid;
+
+    grid-template-columns:
+    repeat(auto-fit,minmax(260px,1fr));
+
+    gap:25px;
+
+}
+
+/* CARD */
+
+.card{
+
+    background:#102840;
+
+    border-radius:18px;
+
+    padding:25px;
+
+    text-align:center;
+
+    cursor:pointer;
+
+    transition:.35s;
+
+    border:2px solid transparent;
+
+}
+
+.card:hover{
+
+    transform:translateY(-8px);
+
+    border-color:#00d4ff;
+
+    box-shadow:0 15px 25px rgba(0,0,0,.4);
+
+}
+
+.icon{
+
+    font-size:55px;
+
+    margin-bottom:15px;
+
+}
+
+.title{
+
+    font-size:22px;
+
+    font-weight:bold;
+
+    margin-bottom:10px;
+
+}
+
+.desc{
+
+    color:#cccccc;
+
+    line-height:24px;
+
+}
+
+/* COMING SOON */
+
+.soon{
+
+    opacity:.55;
+
+}
+
+/* BUTTON */
+
+.back{
+
+    width:280px;
+
+    margin:40px auto;
+
+    display:block;
+
+    background:#00aaff;
+
+    color:white;
+
+    border:none;
+
+    border-radius:12px;
+
+    padding:15px;
+
+    font-size:18px;
+
+    cursor:pointer;
+
+    transition:.3s;
+
+}
+
+.back:hover{
+
+    background:#008ecc;
+
+}
+
+.footer{
+
+    text-align:center;
+
+    color:#888;
+
+    padding:20px;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="header">
+
+🎨 <span>UI MANAGEMENT</span>
+
+</div>
+
+<div class="container">
+
+<div class="grid">
+
+<!-- Dashboard -->
+
+<div class="card" onclick="goDashboardUI()">
+
+<div class="icon">🏠</div>
+
+<div class="title">
+
+Dashboard UI
+
+</div>
+
+<div class="desc">
+
+Manage dashboard title, welcome message, colours and announcements.
+
+</div>
+
+</div>
+
+<!-- Registration -->
+
+<div class="card" onclick="goRegistrationUI()">
+
+<div class="icon">📝</div>
+
+<div class="title">
+
+Registration UI
+
+</div>
+
+<div class="desc">
+
+Edit registration page title, notes, colours and buttons.
+
+<br><br>
+
+<b>Coming Soon</b>
+
+</div>
+
+</div>
+
+<!-- Players -->
+
+<div class="card" onclick="goPlayersUI()">
+
+<div class="icon">👥</div>
+
+<div class="title">
+
+Players UI
+
+</div>
+
+<div class="desc">
+
+Manage player page headings, colours and cards.
+
+<br><br>
+
+<b>Coming Soon</b>
+
+</div>
+
+</div>
+
+<!-- Owners -->
+
+<div class="card" onclick="goOwnersUI()">
+
+<div class="icon">👑</div>
+
+<div class="title">
+
+Owners UI
+
+</div>
+
+<div class="desc">
+
+Manage owner page design.
+
+<br><br>
+
+<b>Coming Soon</b>
+
+</div>
+
+</div>
+
+<!-- Auction -->
+
+<div class="card" onclick="goAuctionUI()">
+
+<div class="icon">🔥</div>
+
+<div class="title">
+
+Auction UI
+
+</div>
+
+<div class="desc">
+
+Customize live auction headings and colours.
+
+<br><br>
+
+<b>Coming Soon</b>
+
+</div>
+
+</div>
+
+<!-- Schedule -->
+
+<div class="card" onclick="goScheduleUI()">
+
+<div class="icon">📅</div>
+
+<div class="title">
+
+Schedule UI
+
+</div>
+
+<div class="desc">
+
+Manage match schedule page.
+
+<br><br>
+
+<b>Coming Soon</b>
+
+</div>
+
+</div>
+
+<!-- Season -->
+
+<div class="card" onclick="goSeasonUI()">
+
+<div class="icon">🏆</div>
+
+<div class="title">
+
+Season Records
+
+</div>
+
+<div class="desc">
+
+Customize season records page.
+
+<br><br>
+
+<b>Coming Soon</b>
+
+</div>
+
+</div>
+
+<!-- Live Action -->
+
+<div class="card" onclick="goActionUI()">
+
+<div class="icon">👀</div>
+
+<div class="title">
+
+Live Action UI
+
+</div>
+
+<div class="desc">
+
+Customize live players solding action headings and colours.
+
+<br><br>
+
+<b>Coming Soon</b>
+
+</div>
+
+</div>
+
+
+<!-- Tournament Rules -->
+
+<div class="card" onclick="goTournamentRulesUI()">
+
+<div class="icon">📝</div>
+
+<div class="title">
+
+Tournament Rules UI
+
+</div>
+
+<div class="desc">
+
+Customize Tournament Rules headings and colours.
+
+<br><br>
+
+<b>Coming Soon</b>
+
+</div>
+
+</div>
+
+<!-- Carousel -->
+
+<div class="card" onclick="goCarouselUI()">
+
+<div class="icon">🖼️</div>
+
+<div class="title">
+
+Carousel Manager
+
+</div>
+
+<div class="desc">
+
+Upload banners and edit slider titles.
+
+<br><br>
+
+<b>Coming Soon</b>
+
+</div>
+
+</div>
+
+</div>
+
+<button class="back" onclick="goBack()">
+
+⬅ Back to Admin Dashboard
+
+</button>
+
+</div>
+
+<div class="footer">
+
+JP Boy's Cricket Tournament Admin Panel
+
+</div>
+
+<script>
+
+// function goBack(){
+
+//     window.location.href="admin.html";
+
+// }
+
+function goBack(){
+
+    window.history.back();
+
+}
+
+function goDashboardUI(){
+
+    window.location.href = "dashboard-ui.html";
+
+}
+
+function goRegistrationUI(){
+
+    window.location.href = "registration-ui.html";
+
+}
+
+function goPlayersUI(){
+
+    window.location.href = "players-ui.html";
+
+}
+
+function goOwnersUI(){
+
+    window.location.href = "owners-ui.html";
+
+}
+
+function goAuctionUI(){
+
+    window.location.href = "auction-ui.html";
+
+}
+
+function goScheduleUI(){
+
+    window.location.href = "schedule-ui.html";
+
+}
+
+function goSeasonUI(){
+
+    window.location.href = "season-ui.html";
+
+}
+
+
+function goActionUI(){
+
+    window.location.href = "action-ui.html";
+
+}
+
+function goTournamentRulesUI(){
+
+    window.location.href = "tournamentrule-ui.html";
+
+}
+
+
+function goCarouselUI(){
+
+    window.location.href = "carousel-ui.html";
+
+}
+
+</script>
+
+</body>
+
+</html>

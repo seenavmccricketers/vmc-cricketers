@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VMC Cricketer's</title>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Segoe UI,sans-serif;
+}
+
+body{
+    background:#081b29;
+    color:#fff;
+}
+
+/* ================= HEADER ================= */
+
+.header{
+    background:#102840;
+    height:75px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:0 25px;
+    position:sticky;
+    top:0;
+    z-index:1000;
+    box-shadow:0 5px 20px rgba(0,0,0,.3);
+}
+
+.logo{
+    font-size:28px;
+    font-weight:bold;
+    color:#ffd700;
+}
+
+.homeBtn{
+    background:#00bcd4;
+    color:white;
+    text-decoration:none;
+    padding:10px 22px;
+    border-radius:10px;
+    font-weight:bold;
+    transition:.3s;
+}
+
+.homeBtn:hover{
+    background:#0097a7;
+}
+
+/* ================= MAIN ================= */
+
+.container{
+    width:min(900px,95%);
+    margin:40px auto;
+}
+
+.title{
+    text-align:center;
+    margin-bottom:35px;
+}
+
+.title h1{
+    font-size:38px;
+    color:#ffd700;
+}
+
+.title p{
+    color:#cfd9e3;
+    margin-top:10px;
+}
+
+.card{
+    background:#102840;
+    border-radius:20px;
+    padding:35px;
+    box-shadow:0 10px 30px rgba(0,0,0,.35);
+}
+
+.row{
+    display:flex;
+    align-items:center;
+    margin-bottom:25px;
+    border-bottom:1px solid rgba(255,255,255,.08);
+    padding-bottom:18px;
+}
+
+.icon{
+    font-size:34px;
+    width:60px;
+    text-align:center;
+}
+
+.info h3{
+    margin-bottom:6px;
+    color:#ffd700;
+}
+
+.info p,
+.info a{
+    color:#fff;
+    text-decoration:none;
+}
+
+/* ================= BUTTONS ================= */
+
+.actions{
+    margin-top:35px;
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+    gap:18px;
+}
+
+.actions a{
+    text-decoration:none;
+    text-align:center;
+    padding:15px;
+    border-radius:12px;
+    color:white;
+    font-weight:bold;
+    transition:.3s;
+}
+
+.call{
+    background:#2ecc71;
+}
+
+.email{
+    background:#3498db;
+}
+
+.whatsapp{
+    background:#25D366;
+}
+
+.map{
+    background:#ff9800;
+}
+
+.actions a:hover{
+    transform:translateY(-5px);
+}
+
+/* ================= FOOTER ================= */
+
+.footer{
+    margin-top:50px;
+    background:#102840;
+    padding:25px;
+    text-align:center;
+}
+
+.footer h3{
+    color:#ffd700;
+    margin-bottom:10px;
+}
+
+.footer p{
+    color:#ccc;
+}
+
+/* ================= MOBILE ================= */
+
+@media(max-width:700px){
+
+.header{
+    flex-direction:column;
+    height:auto;
+    padding:18px;
+    gap:12px;
+}
+
+.logo{
+    font-size:24px;
+}
+
+.title h1{
+    font-size:30px;
+}
+
+.card{
+    padding:22px;
+}
+
+.row{
+    flex-direction:column;
+    text-align:center;
+}
+
+.icon{
+    margin-bottom:10px;
+}
+
+}
+
+</style>
+</head>
+
+<body>
+
+<header class="header">
+
+<div class="logo">
+Contact Us
+</div>
+
+<a href="index.html" class="homeBtn">
+🏠 Home
+</a>
+
+</header>
+
+<div class="container">
+
+<div class="title">
+
+<h1>Need help? Contact us anytime.</h1>
+
+<!-- <p>
+Need help? Contact us anytime.
+</p> -->
+
+</div>
+
+<div class="card">
+
+<div class="row">
+
+<div class="icon">
+👤
+</div>
+
+<div class="info">
+<h3>Name</h3>
+<p>Umesh KB</p>
+</div>
+
+</div>
+
+<div class="row">
+
+<div class="icon">
+📱
+</div>
+
+<div class="info">
+<h3>Mobile Number</h3>
+<p>+91 7026444001 Or 8197901199</p>
+</div>
+
+</div>
+
+<div class="row">
+
+<div class="icon">
+📧
+</div>
+
+<div class="info">
+<h3>Email Address</h3>
+<p>
+<a href="mailto:umeshcse09@gmail.com">
+umeshcse09@gmail.com
+</a>
+</p>
+</div>
+
+</div>
+
+<div class="row">
+
+<div class="icon">
+📍
+</div>
+
+<div class="info">
+<h3>Location</h3>
+<p>Bellary & Bangalore, Karnataka, India</p>
+</div>
+
+</div>
+
+<div class="row">
+
+<div class="icon">
+🕒
+</div>
+
+<div class="info">
+<h3>Support Time</h3>
+<p>Monday - Friday (10:00 AM - 6:00 PM)</p>
+</div>
+
+</div>
+
+<div class="actions">
+
+<a class="call"
+href="tel:+917026444001">
+📞 Call Now
+</a>
+
+<a class="email"
+href="mailto:umeshcse09@gmail.com">
+📧 Email
+</a>
+
+<a class="whatsapp"
+href="https://wa.me/917026444001"
+target="_blank">
+💬 WhatsApp
+</a>
+<!-- 
+<a class="map"
+href="https://maps.google.com"
+target="_blank">
+📍 View Location
+</a> -->
+
+</div>
+
+</div>
+
+</div>
+
+<footer class="footer">
+<!-- 
+<h3>
+🏏 JP Boy's Cricketer's Tournament
+</h3>
+
+<p>
+Building Cricket Together
+</p> -->
+
+<br>
+
+<p>
+🏏 VMC Cricketer's © 2026 | Developed By KBU Software Pvt Ltd. All Rights Reserved.
+</p>
+
+</footer>
+
+</body>
+</html>

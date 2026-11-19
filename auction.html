@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VMC Cricketer's</title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Segoe UI,sans-serif}
+body{min-height:100vh;display:flex;flex-direction:column;background:#0b1c2d;color:#fff}
+main{flex:1}
+header{position:sticky;top:0;z-index:1000;background:linear-gradient(90deg,#1e3c72,#2a5298);padding:12px 16px;display:flex;justify-content:space-between;align-items:center}
+.brand{font-size:18px;font-weight:bold}
+.nav-btn{background:#ffeb3b;color:#000;padding:6px 14px;border-radius:20px;font-weight:600;text-decoration:none}
+.auction-info{text-align:center;padding:16px}
+.toggle{margin-top:10px;padding:8px 18px;border-radius:20px;border:none;cursor:pointer;font-weight:bold}
+.on{background:#1fa463}
+.off{background:#d9534f}
+.player-card{margin:16px;padding:16px;border-radius:14px;text-align:center;background:#102840}
+.player-card img{width:120px;height:120px;border-radius:50%;object-fit:cover;background:#fff;margin-bottom:10px}
+.available{background:#1fa463}
+.sold{background:#ffd700;color:#000}
+.unsold{background:#d9534f}
+.controls{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:10px}
+.controls input,.controls select,.controls button{padding:8px;border-radius:8px;border:none}
+.bid-btn{background:#ffd700;font-weight:bold}
+.skip-btn{background:#d9534f;color:#fff}
+.teams{padding:16px;display:grid;grid-template-columns:1fr;gap:12px}
+@media(min-width:768px){.teams{grid-template-columns:repeat(2,1fr)}}
+.team{background:linear-gradient(135deg,#0f2a44,#123b5e);border-radius:14px;padding:14px}
+.team-top{display:flex;gap:12px;align-items:center}
+.team img{width:50px;height:50px;border-radius:8px;background:#fff}
+.team-money{color:#ffd700;font-weight:bold;margin-top:4px}
+.team ul{margin-top:8px;font-size:14px;padding-left:18px}
+footer{background:linear-gradient(90deg,#1e3c72,#2a5298);text-align:center;padding:12px;font-size:14px}
+</style>
+
+</head>
+
+<body>
+
+<header>
+  <div class="brand">🏏 VMC Cricketer's Auction</div>
+  <a href="index.html" class="nav-btn">Dashboard</a>
+</header>
+
+<main>
+
+<div class="auction-info">
+  <h2>Season 1 – Live Auction</h2>
+  <button id="toggleBtn" class="toggle off" onclick="toggleAuction()">Auction OFF</button>
+</div>
+<p id="playersRemaining" style="margin-top:8px;font-weight:bold;color:#ffd700;">
+Players Remaining: 0
+</p>
+<div class="player-card" id="playerCard">
+  <h3>Auction Not Started</h3>
+</div>
+
+<div class="controls">
+  <select id="teamSelect"></select>
+  <input type="number" id="bidAmount" placeholder="Bid ₹" style="width:90px">
+  <button class="bid-btn" onclick="placeBid()">BID</button>
+  <button class="skip-btn" onclick="skipPlayer()">UNSOLD</button>
+</div>
+
+<div class="teams" id="teams"></div>
+
+</main>
+
+<footer>
+🏏 VMC Cricketer's © 2026 | Developed By KBU Software Pvt Ltd.
+</footer>
+
+<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script> -->
+
+<!-- <script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
+import {
+  getFirestore, collection, query, where, onSnapshot,
+  doc, updateDoc, getDoc, setDoc, addDoc, getDocs
+} from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
+import { getAuth, onAuthStateChanged }
+from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
+
+const firebaseConfig={
+ apiKey:"AIzaSyBdlkwG56G7QJSWR9SI2e1LarOUxWg8lW4",
+ authDomain:"jp-boys.firebaseapp.com",
+ projectId:"jp-boys",
+ storageBucket:"jp-boys.firebasestorage.app",
+ messagingSenderId:"1015271887162",
+ appId:"1:1015271887162:web:35dbd2b95f3df3f3908003"
+};
+
+const app=initializeApp(firebaseConfig);
+const db=getFirestore(app);
+const auth=getAuth(app);
+
+/* ADMIN CHECK */
+let isAdmin=localStorage.getItem("isAdmin")==="true";
+onAuthStateChanged(auth, async user=>{
+ if(user){
+   const snap=await getDoc(doc(db,"users",user.uid));
+   if(snap.exists() && snap.data().role==="admin") isAdmin=true;
+ }
+});
+
+/* TEAMS BASE */
+let teams=[
+ {name:"MegaStar Cricketer's",money:100000,players:[],logo:"https://res.cloudinary.com/dwvem4ixh/image/upload/v1770146487/megastar_krtll5.jpg"},
+ {name:"Dynamic Daredevils",money:100000,players:[],logo:"https://res.cloudinary.com/dwvem4ixh/image/upload/v1770148161/daredevils_yfqyws.jpg"},
+ {name:"Spartan Striker's",money:100000,players:[],logo:"https://res.cloudinary.com/dwvem4ixh/image/upload/v1770148162/spartan_kkb1ih.jpg"},
+ {name:"Ghost Rider's",money:100000,players:[],logo:"https://res.cloudinary.com/dwvem4ixh/image/upload/v1770148161/ghost_x1pqzm.jpg"},
+ {name:"Trinetra Titans",money:100000,players:[],logo:"https://res.cloudinary.com/dwvem4ixh/image/upload/v1770148161/trinetra_auzzjv.jpg"},
+ {name:"Shadow Strikers",money:100000,players:[],logo:"https://res.cloudinary.com/dwvem4ixh/image/upload/v1770640193/Shadow_Strikers_xlky53.jpg"}
+];
+
+/* LOAD TEAM MONEY ONLY */
+async function loadTeamBalances(){
+ for(let i=0;i<teams.length;i++){
+   const ref=doc(db,"teams",teams[i].name);
+   const snap=await getDoc(ref);
+
+   if(snap.exists()){
+     teams[i].money=snap.data().money;
+   }else{
+     await setDoc(ref,{money:teams[i].money});
+   }
+
+   // Load sold players separately
+  //  const soldSnap=await getDocs(query(
+  //    collection(db,"teamPlayers"),
+  //    where("teamName","==",teams[i].name)
+  //  ));
+
+  //  teams[i].players=[];
+  //  soldSnap.forEach(d=>{
+  //    teams[i].players.push(d.data());
+  //  });
+
+/* 🔥 REALTIME TEAM PLAYERS SYNC */
+onSnapshot(collection(db,"teamPlayers"), snap=>{
+
+  // Clear all players first
+  teams.forEach(t => t.players = []);
+
+  snap.forEach(docSnap=>{
+    const data = docSnap.data();
+    const team = teams.find(t=>t.name===data.teamName);
+    if(team){
+      team.players.push(data);
+    }
+  });
+
+  renderTeams();
+});
+
+
+
+
+
+
+
+ }
+//  renderTeams();
+}
+loadTeamBalances();
+
+/* AUCTION STATE */
+let players=[];
+let remaining=[];
+let unsoldPool=[];
+let current=null;
+let auctionLive=false;
+
+/* LOAD PLAYERS */
+const q=query(collection(db,"players"),where("sold","==",false));
+
+onSnapshot(q,(snap)=>{
+ players=[];
+ snap.forEach(d=>players.push({id:d.id,...d.data()}));
+ if(!auctionLive){
+   remaining=[...players];
+   unsoldPool=[];
+ }
+});
+
+/* CONTROLS */
+window.toggleAuction=()=>{
+ if(!isAdmin) return alert("Admin only");
+ auctionLive=!auctionLive;
+ toggleBtn.textContent=auctionLive?"Auction LIVE":"Auction OFF";
+ toggleBtn.className="toggle "+(auctionLive?"on":"off");
+ if(auctionLive) nextPlayer();
+};
+
+window.nextPlayer=()=>{
+ if(remaining.length===0 && unsoldPool.length>0){
+   remaining=[...unsoldPool];
+   unsoldPool=[];
+ }
+ if(!auctionLive || remaining.length===0){
+   playerCard.innerHTML="<h3>Auction Completed</h3>";
+   return;
+ }
+ const i=Math.floor(Math.random()*remaining.length);
+ current=remaining.splice(i,1)[0];
+ showPlayer("available");
+};
+
+function showPlayer(status){
+ playerCard.className="player-card "+status;
+ playerCard.innerHTML=`
+  <img src="${current.photo}">
+  <h3>${current.name}</h3>
+  <p>${current.role}</p>
+  <p>${current.mobile}</p>`;
+}
+
+/* FIXED BID */
+window.placeBid=async()=>{
+ if(!isAdmin || !auctionLive || !current) return;
+
+ const amt=Number(bidAmount.value);
+ const i=teamSelect.value;
+ if(amt<=0) return alert("Enter amount");
+ if(teams[i].money<amt) return alert("No balance");
+
+ teams[i].money-=amt;
+
+ await updateDoc(doc(db,"teams",teams[i].name),{
+   money:teams[i].money
+ });
+
+ await updateDoc(doc(db,"players",current.id),{
+   sold:true,
+   soldAmount:amt,
+   soldTeam:teams[i].name,
+   soldAt:Date.now()
+ });
+
+ await addDoc(collection(db,"teamPlayers"),{
+   teamName:teams[i].name,
+   name:current.name,
+   photo:current.photo,
+   amount:amt
+ });
+
+ teams[i].players.push({...current,amount:amt});
+
+ showPlayer("sold");
+ bidAmount.value="";
+ setTimeout(nextPlayer,800);
+ renderTeams();
+};
+
+/* UNSOLD */
+window.skipPlayer=()=>{
+ if(!isAdmin || !auctionLive || !current) return;
+ unsoldPool.push(current);
+ showPlayer("unsold");
+ setTimeout(nextPlayer,600);
+};
+
+/* UI */
+function renderTeams(){
+ teamsDiv.innerHTML="";
+ teamSelect.innerHTML="";
+ teams.forEach((t,i)=>{
+  teamsDiv.innerHTML+=`
+   <div class="team">
+    <div class="team-top">
+     <img src="${t.logo}">
+     <div>
+      <b>${t.name}</b>
+      <div class="team-money">₹${t.money}</div>
+     </div>
+    </div>
+    <ul>${t.players.map(p=>`<li>${p.name} - ₹${p.amount}</li>`).join("")}</ul>
+    <button style="margin-top:10px;padding:8px;border:none;border-radius:8px;background:#ffd700;font-weight:bold"
+      onclick="downloadTeamPDF(${i})">⬇ Download Team PDF</button>
+   </div>`;
+  teamSelect.innerHTML+=`<option value="${i}">${t.name}</option>`;
+ });
+}
+
+const teamsDiv=document.getElementById("teams");
+const teamSelect=document.getElementById("teamSelect");
+const bidAmount=document.getElementById("bidAmount");
+const playerCard=document.getElementById("playerCard");
+const toggleBtn=document.getElementById("toggleBtn");
+
+renderTeams();
+
+window.downloadTeamPDF = async function(index){
+
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+
+  const team = teams[index];
+
+  doc.setFontSize(18);
+  doc.text(team.name, 80, 20);
+
+  doc.setFontSize(12);
+  doc.text("Remaining Balance: ₹" + team.money, 20, 35);
+
+  let y = 50;
+
+  if(team.players.length === 0){
+    doc.text("No players purchased", 20, y);
+  } else {
+
+    for(let p of team.players){
+
+      // Player Name
+      doc.text("Name: " + p.name, 20, y);
+
+      // Amount
+      doc.text("Amount: ₹" + p.amount, 20, y + 7);
+
+      // Player Photo
+      if(p.photo){
+        try{
+          const imgData = await toDataURL(p.photo);
+          doc.addImage(imgData, "JPEG", 150, y - 5, 30, 30);
+        }catch(e){
+          console.log("Image load failed");
+        }
+      }
+
+      y += 40;
+
+      if(y > 260){
+        doc.addPage();
+        y = 20;
+      }
+    }
+  }
+
+  doc.save(team.name.replace(/\s/g,"_") + "_Team.pdf");
+};
+
+
+/* Convert Image URL to Base64 */
+function toDataURL(url){
+  return fetch(url)
+    .then(res => res.blob())
+    .then(blob => new Promise((resolve,reject)=>{
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result);
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    }));
+}
+
+
+
+
+
+
+
+</script> -->
+
+
+
+
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
+import {
+  getFirestore, collection, query, where, onSnapshot,
+  doc, updateDoc, getDoc, setDoc, addDoc
+} from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
+import { getAuth, onAuthStateChanged }
+from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
+
+const firebaseConfig={
+
+  apiKey: "AIzaSyBIY7j6h-3BcauIWe7hPp6Z4EpZ4vIAGlI",
+
+  authDomain: "vmccricketers.firebaseapp.com",
+
+   projectId: "vmccricketers",
+
+  storageBucket: "vmccricketers.firebasestorage.app",
+
+  messagingSenderId: "241813165395",
+
+  appId: "1:241813165395:web:ffd84d7209529fd272bda6"
+
+};
+
+const app=initializeApp(firebaseConfig);
+const db=getFirestore(app);
+const auth=getAuth(app);
+
+/* ADMIN CHECK */
+let isAdmin=localStorage.getItem("isAdmin")==="true";
+onAuthStateChanged(auth, async user=>{
+ if(user){
+   const snap=await getDoc(doc(db,"users",user.uid));
+   if(snap.exists() && snap.data().role==="admin") isAdmin=true;
+ }
+});
+
+/* TEAMS BASE */
+let teams=[
+ {name:"VMC 1",money:100000,players:[],logo:"https://res.cloudinary.com/dwvem4ixh/image/upload/v1794394652/WhatsApp_Image_2026-11-11_at_8.15.26_AM_urelvt.jpg"},
+ {name:"VMC 2",money:100000,players:[],logo:"https://res.cloudinary.com/dwvem4ixh/image/upload/v1794394652/WhatsApp_Image_2026-11-11_at_7.03.01_AM_u48xbr.jpg"},
+ {name:"VMC 3",money:100000,players:[],logo:"https://res.cloudinary.com/dwvem4ixh/image/upload/v1770640193/Shadow_Strikers_xlky53.jpg"},
+ {name:"VMC 4",money:100000,players:[],logo:"https://res.cloudinary.com/dwvem4ixh/image/upload/v1794394653/WhatsApp_Image_2026-11-11_at_2.25.18_PM_vbuirt.jpg"},
+ {name:"VMC 5",money:100000,players:[],logo:"https://res.cloudinary.com/dwvem4ixh/image/upload/v1794394652/WhatsApp_Image_2026-11-10_at_11.33.54_PM_ileuhw.jpg"},
+ {name:"VMC 6",money:100000,players:[],logo:"https://res.cloudinary.com/dwvem4ixh/image/upload/v1794394653/WhatsApp_Image_2026-11-11_at_2.27.18_PM_k32dmh.jpg"},
+ {name:"VMC 7",money:100000,players:[],logo:"https://res.cloudinary.com/dwvem4ixh/image/upload/v1794394653/WhatsApp_Image_2026-11-11_at_2.27.18_PM_k32dmh.jpg"},
+ {name:"VMC 8",money:100000,players:[],logo:"https://res.cloudinary.com/dwvem4ixh/image/upload/v1794394653/WhatsApp_Image_2026-11-11_at_2.27.18_PM_k32dmh.jpg"},
+ {name:"VMC 9",money:100000,players:[],logo:"https://res.cloudinary.com/dwvem4ixh/image/upload/v1794394653/WhatsApp_Image_2026-11-11_at_2.27.18_PM_k32dmh.jpg"},
+ {name:"VMC 10",money:100000,players:[],logo:"https://res.cloudinary.com/dwvem4ixh/image/upload/v1794394653/WhatsApp_Image_2026-11-11_at_2.27.18_PM_k32dmh.jpg"}
+];
+
+/* LOAD TEAM MONEY ONLY */
+// async function loadTeamBalances(){
+//  for(let i=0;i<teams.length;i++){
+//    const ref=doc(db,"teams",teams[i].name);
+
+//    const snap=await getDoc(ref);
+
+//    if(snap.exists()){
+//      teams[i].money=snap.data().money;
+//    }else{
+//      await setDoc(ref,{money:teams[i].money});
+//    }
+//  }
+//  renderTeams();
+// }
+
+
+// teams.forEach(team=>{
+
+//     const ref = doc(db,"teams",team.name);
+
+//     onSnapshot(ref, async (snap)=>{
+
+//         if(snap.exists()){
+
+//             team.money = snap.data().money || 100000;
+
+//         }else{
+
+//             await setDoc(ref,{
+//                 money:100000
+//             });
+
+//             team.money = 100000;
+//         }
+
+//         renderTeams();
+
+//     });
+
+// });
+
+// // loadTeamBalances();
+
+// /* ✅ SINGLE REALTIME TEAM PLAYERS LISTENER (FIXED) */
+// // onSnapshot(collection(db,"teamPlayers"), snap=>{
+
+// //   teams.forEach(t => t.players = []);
+
+// //   snap.forEach(docSnap=>{
+// //     const data = docSnap.data();
+// //     const team = teams.find(t=>t.name===data.teamName);
+// //     if(team){
+// //       team.players.push(data);
+// //     }
+// //   });
+
+// //   renderTeams();
+// // });
+
+// onSnapshot(collection(db, "teamPlayers"), (snap) => {
+
+//     // Clear all team players
+//     teams.forEach(team => {
+
+//         team.players = [];
+
+//     });
+
+//     // Load players again
+//     snap.forEach(docSnap => {
+
+//         const player = docSnap.data();
+
+//         const team = teams.find(t => t.name === player.teamName);
+
+//         if (team) {
+
+//             team.players.push(player);
+
+//         }
+
+//     });
+
+//     renderTeams();
+
+// });
+
+/* ===========================
+   TEAM MONEY REALTIME
+=========================== */
+
+teams.forEach(team=>{
+
+    const teamRef = doc(db,"teams",team.name);
+
+    onSnapshot(teamRef, async(snapshot)=>{
+
+        if(snapshot.exists()){
+
+            team.money = Number(snapshot.data().money || 100000);
+
+        }else{
+
+            await setDoc(teamRef,{
+                money:100000
+            });
+
+            team.money = 100000;
+        }
+
+        renderTeams();
+
+    });
+
+});
+
+
+/* ===========================
+   TEAM PLAYERS REALTIME
+=========================== */
+
+onSnapshot(collection(db,"teamPlayers"),(snapshot)=>{
+
+    // Clear players first
+    teams.forEach(team=>{
+        team.players=[];
+    });
+
+    // Add latest players
+    snapshot.forEach(docSnap=>{
+
+        const data = docSnap.data();
+
+        const team = teams.find(
+            t=>t.name===data.teamName
+        );
+
+        if(team){
+
+            team.players.push(data);
+
+        }
+
+    });
+
+    renderTeams();
+
+});
+
+/* AUCTION STATE */
+let players=[];
+let remaining=[];
+let unsoldPool=[];
+let current=null;
+let auctionLive=false;
+
+/* LOAD PLAYERS */
+// const q=query(collection(db,"players"),where("sold","==",false));
+
+// onSnapshot(q,(snap)=>{
+//  players=[];
+//  snap.forEach(d=>players.push({id:d.id,...d.data()}));
+//  if(!auctionLive){
+//    remaining=[...players];
+//    unsoldPool=[];
+//  }
+// });
+
+// const q = query(collection(db,"players"), where("sold","==",false));
+
+// onSnapshot(q,(snap)=>{
+//   players=[];
+//   snap.forEach(d=>players.push({id:d.id,...d.data()}));
+
+//   // 🔥 FIX: Always keep remaining synced
+//   if(auctionLive){
+//      // Remove already processed players
+//      const processedIds = new Set([
+//         ...unsoldPool.map(p=>p.id),
+//         ...(current ? [current.id] : [])
+//      ]);
+
+//      remaining = players.filter(p => !processedIds.has(p.id));
+//   } else {
+//      remaining=[...players];
+
+//      /* Player's Count */
+//      updateRemainingCount();
+//      unsoldPool=[];
+//   }
+// });
+
+const q = query(
+    collection(db,"players"),
+    where("sold","==",false)
+);
+
+onSnapshot(q,(snapshot)=>{
+
+    players=[];
+
+    snapshot.forEach(docSnap=>{
+
+        players.push({
+            id:docSnap.id,
+            ...docSnap.data()
+        });
+
+    });
+
+    if(!auctionLive){
+
+        current=null;
+
+        remaining=[...players];
+
+        unsoldPool=[];
+
+        playerCard.innerHTML=`
+            <h3>Auction Not Started</h3>
+        `;
+
+        updateRemainingCount();
+
+        renderTeams();
+
+        return;
+    }
+
+    const processed=new Set([
+
+        ...(current ? [current.id] : []),
+
+        ...unsoldPool.map(p=>p.id)
+
+    ]);
+
+    remaining=players.filter(p=>!processed.has(p.id));
+
+    updateRemainingCount();
+
+});
+
+/* Player's Count */
+
+function updateRemainingCount(){
+  const count = remaining.length + (current ? 1 : 0);
+  document.getElementById("playersRemaining").innerText =
+    "Players Remaining: " + count;
+}
+
+
+
+/* CONTROLS */
+// window.toggleAuction=()=>{
+//  if(!isAdmin) return alert("Admin only");
+//  auctionLive=!auctionLive;
+//  toggleBtn.textContent=auctionLive?"Auction LIVE":"Auction OFF";
+//  toggleBtn.className="toggle "+(auctionLive?"on":"off");
+//  if(auctionLive) nextPlayer();
+// };
+
+window.toggleAuction=()=>{
+
+    if(!isAdmin){
+
+        alert("Admin only");
+
+        return;
+
+    }
+
+    auctionLive=!auctionLive;
+
+    toggleBtn.innerText=auctionLive
+        ? "Auction LIVE"
+        : "Auction OFF";
+
+    toggleBtn.className=
+        "toggle " + (auctionLive ? "on" : "off");
+
+    if(auctionLive){
+
+        nextPlayer();
+
+    }else{
+
+        current=null;
+
+        remaining=[...players];
+
+        unsoldPool=[];
+
+        playerCard.innerHTML="<h3>Auction Not Started</h3>";
+
+        updateRemainingCount();
+
+    }
+
+};
+
+window.nextPlayer=()=>{
+ if(remaining.length===0 && unsoldPool.length>0){
+   remaining=[...unsoldPool];
+   unsoldPool=[];
+ }
+ if(!auctionLive || remaining.length===0){
+  current = null;
+   playerCard.innerHTML="<h3>Auction Completed</h3>";
+   updateRemainingCount();
+   return;
+ }
+ const i=Math.floor(Math.random()*remaining.length);
+ current=remaining.splice(i,1)[0];
+
+ announcePlayer(current.name);
+
+updateRemainingCount();
+
+ showPlayer("available");
+};
+
+/*   Changed this : <img src="${current.photo}"> in the 490 line   */
+
+function showPlayer(status){
+ playerCard.className="player-card "+status;
+ playerCard.innerHTML=`
+ <img loading="lazy" src="${current.photo.replace('/upload/', '/upload/w_300,h_300,c_fill,q_auto,f_auto/')}">
+  <h3>${current.name}</h3>
+  <p>${current.role}</p>
+  <p>${current.mobile}</p>`;
+};
+
+/* BID */
+window.placeBid=async()=>{
+ if(!isAdmin || !auctionLive || !current) return;
+
+ const amt=Number(bidAmount.value);
+ const i=teamSelect.value;
+ if(amt<=0) return alert("Enter amount");
+ if(teams[i].money<amt) return alert("No balance");
+
+ teams[i].money-=amt;
+
+ await updateDoc(doc(db,"teams",teams[i].name),{
+   money:teams[i].money
+ });
+
+ await updateDoc(doc(db,"players",current.id),{
+   sold:true,
+   soldAmount:amt,
+   soldTeam:teams[i].name,
+   soldAt:Date.now()
+ });
+
+//  await addDoc(collection(db,"teamPlayers"),{
+//    teamName:teams[i].name,
+//    name:current.name,
+//    photo:current.photo,
+//    amount:amt
+//  });
+
+await addDoc(collection(db,"teamPlayers"),{
+    teamName:teams[i].name,
+    playerId:current.id,
+    name:current.name,
+    role:current.role || "",
+    mobile:current.mobile || "",
+    photo:current.photo || "",
+    amount:amt,
+    soldAt:Date.now()
+});
+
+// After auction ends,your Auction page should execute,Otherwise every tournament remains
+
+await updateDoc(activeTournamentRef,{
+status:"Completed",
+winner:"Team ABC",
+completedAt:Date.now()
+});
+
+ showPlayer("sold");
+
+//  announceSold(teams[i].name, amt);
+
+ bidAmount.value="";
+ setTimeout(nextPlayer,800);
+};
+
+/* UNSOLD */
+window.skipPlayer=()=>{
+ if(!isAdmin || !auctionLive || !current) return;
+ unsoldPool.push(current);
+ showPlayer("unsold");
+ setTimeout(nextPlayer,600);
+};
+
+/* UI */
+function renderTeams(){
+ teamsDiv.innerHTML="";
+ teamSelect.innerHTML="";
+ teams.forEach((t,i)=>{
+  teamsDiv.innerHTML+=`
+   <div class="team">
+    <div class="team-top">
+     <img src="${t.logo}">
+     <div>
+      <b>${t.name}</b>
+      <div class="team-money">₹${t.money}</div>
+     </div>
+    </div>
+    <ul>${t.players.map(p=>`<li>${p.name} - ₹${p.amount}</li>`).join("")}</ul>
+    <button style="margin-top:10px;padding:8px;border:none;border-radius:8px;background:#ffd700;font-weight:bold"
+      onclick="downloadTeamPDF(${i})">⬇ Download Team PDF</button>
+   </div>`;
+  teamSelect.innerHTML+=`<option value="${i}">${t.name}</option>`;
+ });
+}
+
+const teamsDiv=document.getElementById("teams");
+const teamSelect=document.getElementById("teamSelect");
+const bidAmount=document.getElementById("bidAmount");
+const playerCard=document.getElementById("playerCard");
+const toggleBtn=document.getElementById("toggleBtn");
+
+
+
+
+
+/* 🎤 VOICE ANNOUNCER */
+function announcePlayer(name){
+
+  if(!('speechSynthesis' in window)) return;
+
+  const speech = new SpeechSynthesisUtterance(
+    "Next player. " + name
+  );
+
+  speech.lang = "en-IN";
+  speech.rate = 0.9;
+  speech.pitch = 1;
+
+  window.speechSynthesis.cancel(); // stop previous voice
+  window.speechSynthesis.speak(speech);
+}
+
+
+// /* 🔊 AUCTION VOICE SYSTEM */
+
+// function speak(text){
+
+//   if(!('speechSynthesis' in window)) return;
+
+//   const speech = new SpeechSynthesisUtterance(text);
+//   speech.lang = "en-IN";
+//   speech.rate = 0.9;
+//   speech.pitch = 1;
+
+//   window.speechSynthesis.cancel();
+//   window.speechSynthesis.speak(speech);
+// }
+
+// function announceSold(teamName, amount){
+//   const formattedAmount = amount.toLocaleString("en-IN");
+//   speak("Sold to " + teamName + " for " + formattedAmount + " rupees");
+// }
+
+/* =========================
+   TEAM PDF DOWNLOAD FIX
+========================= */
+
+window.downloadTeamPDF = async function(index){
+
+  const { jsPDF } = window.jspdf;
+  const pdf = new jsPDF();
+
+  const team = teams[index];
+
+  pdf.setFontSize(18);
+  pdf.text(team.name, 70, 20);
+
+  pdf.setFontSize(12);
+  pdf.text("Remaining Balance: ₹" + team.money, 20, 35);
+
+  let y = 50;
+
+  if(team.players.length === 0){
+    pdf.text("No players purchased", 20, y);
+  } else {
+
+    for(let p of team.players){
+
+      pdf.text("Name: " + p.name, 20, y);
+      pdf.text("Amount: ₹" + p.amount, 20, y + 7);
+
+      if(p.photo){
+        try{
+          const imgData = await convertToBase64(p.photo);
+          pdf.addImage(imgData, "JPEG", 150, y - 5, 30, 30);
+        }catch(e){
+          console.log("Image load failed");
+        }
+      }
+
+      y += 40;
+
+      if(y > 260){
+        pdf.addPage();
+        y = 20;
+      }
+    }
+  }
+
+  pdf.save(team.name.replace(/\s/g,"_") + "_Team.pdf");
+};
+
+
+/* IMAGE CONVERTER */
+function convertToBase64(url){
+  return fetch(url)
+    .then(res => res.blob())
+    .then(blob => new Promise((resolve,reject)=>{
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result);
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    }));
+}
+
+
+
+
+
+
+
+
+renderTeams();
+</script>
+
+
+</body>
+</html>

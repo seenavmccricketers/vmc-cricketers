@@ -1,0 +1,1308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VMC Cricketer's</title>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:"Poppins",sans-serif;}
+body{background:#000;min-height:100vh;display:flex;flex-direction:column;}
+
+header{
+background:linear-gradient(90deg,#1976d2,#512da8);
+color:#fff;padding:12px 16px;
+display:flex;align-items:center;justify-content:space-between;
+position:relative;
+}
+
+header h1{font-size:20px;font-weight:700;white-space:nowrap;}
+
+.nav-links{display:flex;gap:12px;}
+.nav-links a{
+background:#ffeb3b;color:#000;padding:7px 14px;
+border-radius:20px;text-decoration:none;font-weight:600;font-size:14px;
+}
+
+
+
+.hamburger{display:none;font-size:26px;cursor:pointer;}
+
+.mobile-menu{
+display:none;flex-direction:column;
+background:linear-gradient(90deg,#1976d2,#512da8);
+position:absolute;top:100%;left:0;width:100%;
+padding:12px;z-index:1000;
+}
+
+.mobile-menu a{
+background:#ffeb3b;color:#000;padding:10px;
+border-radius:10px;text-decoration:none;
+font-weight:600;margin-bottom:8px;text-align:center;
+}
+
+.announcement{
+background:linear-gradient(90deg,#ff9800,#f57c00);
+color:#fff;padding:10px 14px;
+display:flex;align-items:center;overflow:hidden;
+}
+
+.marquee{flex:1;white-space:nowrap;}
+.marquee span{
+display:inline-block;padding-left:100%;
+animation:scroll 90s linear infinite;
+}
+
+@keyframes scroll{
+from{transform:translateX(0)}
+to{transform:translateX(-100%)}
+}
+
+.close-announce{cursor:pointer;margin-left:12px;font-size:18px;}
+
+.announcement-bar{
+background:linear-gradient(90deg,green,green);
+color:#fff;padding:12px 16px;
+display:flex;justify-content:space-between;
+align-items:center;font-weight:600;
+}
+
+#seasonTimer{
+background:rgba(0,0,0,0.3);
+padding:6px 10px;border-radius:8px;margin-left:6px;
+}
+
+.announce-close{
+background:none;border:none;color:#fff;
+font-size:18px;cursor:pointer;
+}
+
+
+
+/* ===== CAROUSEL ===== */
+.carousel{flex:1;overflow:hidden;position:relative;}
+.carousel-track{display:flex;height:100%;transition:transform 1s ease;}
+.slide{min-width:100%;position:relative;}
+.slide img{width:100%;height:100%;object-fit:cover;}
+
+.carousel-btn{
+position:absolute;
+top:50%;
+transform:translateY(-50%);
+background:rgba(0,0,0,0.6);
+color:#fff;
+border:none;
+font-size:28px;
+padding:10px 14px;
+cursor:pointer;
+border-radius:50%;
+z-index:10;
+}
+
+.carousel-btn:hover{
+background:rgba(0,0,0,0.8);
+}
+
+.prev{left:15px;}
+.next{right:15px;}
+
+.caption{
+position:absolute;top:20px;left:20px;
+background:rgba(0,0,0,0.65);color:#fff;
+padding:14px 18px;border-radius:12px;max-width:300px;
+}
+
+.caption h2{font-size:20px;}
+.caption p{font-size:14px;}
+
+footer{
+background:linear-gradient(90deg,#1976d2,#512da8);
+color:#fff;text-align:center;
+padding:10px;font-size:14px;font-weight:600;
+}
+
+@media(max-width:768px){
+.nav-links{display:none}
+.hamburger{display:block}
+header h1{font-size:16px}
+.caption h2{font-size:16px}
+.caption p{font-size:13px}
+}
+
+
+
+#notificationBell{
+  position:relative;
+  font-size:22px;
+  cursor:pointer;
+  margin-left:10px;
+}
+
+#notifCount{
+  position:absolute;
+  top:-6px;
+  right:-10px;
+  background:red;
+  color:#fff;
+  font-size:10px;
+  padding:2px 6px;
+  border-radius:50%;
+  display:none;
+}
+
+#notificationBox{
+  position:absolute;
+  top:60px;
+  right:10px;
+  width:320px;
+  max-height:400px;
+  overflow-y:auto;
+  background:#111;
+  color:#fff;
+  border-radius:12px;
+  display:none;
+  z-index:2000;
+  box-shadow:0 0 12px rgba(0,0,0,0.6);
+  padding:12px;
+}
+
+@media(max-width:768px){
+  #notificationBox{
+    width:95%;
+    right:2.5%;
+    top:70px;
+  }
+}
+
+#notificationBox{
+  scroll-behavior:smooth;
+}
+
+
+/* 🔥 Highlight Latest Notification */
+.notification-item.latest{
+  border:2px solid #ffd700;
+  background:#1e3c72;
+  box-shadow:0 0 10px #ffd700;
+  border-radius:8px;
+  padding:10px;
+}
+
+
+
+
+@keyframes popupBounce {
+  0% {
+    transform: scale(0.7);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.05);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+
+/* 🎉 BIRTHDAY BLAST STYLE */
+.birthday-banner{
+  background: linear-gradient(90deg,#0f9d58,#1b5e20);
+  color:#fff;
+  text-align:center;
+  padding:14px;
+  border-radius:14px;
+  font-weight:700;
+  font-size:18px;
+  position:relative;
+  overflow:hidden;
+  box-shadow:0 0 15px rgba(255,255,255,0.2);
+}
+
+.birthday-banner span{
+  color:#ffeb3b;
+  font-size:20px;
+}
+
+.sub-text{
+  font-size:13px;
+  margin-top:4px;
+  opacity:0.9;
+}
+
+/* 🎊 CONFETTI */
+.confetti{
+  position:absolute;
+  width:8px;
+  height:8px;
+  background:yellow;
+  top:-10px;
+  animation:fall linear infinite;
+}
+
+@keyframes fall{
+  0%{transform:translateY(0) rotate(0deg);}
+  100%{transform:translateY(200px) rotate(360deg);}
+}
+
+.menuIcon{
+    font-size:30px;
+    cursor:pointer;
+    color:white;
+}
+
+.sideMenu{
+
+    position:fixed;
+
+    top:0;
+
+    right:-280px;
+
+    width:260px;
+
+    height:100%;
+
+    background:#102840;
+
+    transition:.35s;
+
+    padding-top:70px;
+
+    z-index:9999;
+
+}
+
+.sideMenu a{
+
+    display:block;
+
+    color:white;
+
+    text-decoration:none;
+
+    padding:16px 25px;
+
+    border-bottom:1px solid rgba(255,255,255,.1);
+
+}
+
+.sideMenu a:hover{
+
+    background:#173d61;
+
+}
+
+.sideMenu.active{
+
+    right:0;
+
+}
+
+
+
+
+
+.app-download-section {
+    background: linear-gradient(135deg,#102840,#173d61);
+    margin: 15px;
+    padding: 22px;
+    border-radius: 15px;
+    text-align: center;
+    color: white;
+    box-shadow: 0 5px 18px rgba(0,0,0,0.4);
+}
+
+.app-download-section h2 {
+    font-size: 21px;
+    margin-bottom: 8px;
+}
+
+.app-download-section p {
+    font-size: 14px;
+    margin-bottom: 12px;
+}
+
+.download-app-btn {
+    display: inline-block;
+    background: linear-gradient(90deg,#00c853,#00a844);
+    color: white;
+    text-decoration: none;
+    padding: 13px 25px;
+    border-radius: 30px;
+    font-weight: bold;
+    font-size: 16px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+.download-app-btn:hover {
+    transform: scale(1.04);
+}
+
+.app-version-text {
+    font-size: 12px;
+    opacity: 0.8;
+    margin-top: 12px;
+}
+
+.apk-download-box {
+    position: relative;
+    padding: 20px;
+    margin: 15px 0;
+    background: #102840;
+    border: 1px solid #2196f3;
+    border-radius: 12px;
+    color: white;
+    text-align: center;
+}
+
+.apk-close-btn {
+    position: absolute;
+    top: 8px;
+    right: 10px;
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 22px;
+    cursor: pointer;
+}
+
+.apk-download-btn {
+    display: inline-block;
+    padding: 10px 20px;
+    background: green;
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: bold;
+    margin: 10px;
+}
+
+.apk-version {
+    font-size: 13px;
+    color: #aaa;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<!-- <h1>🏏 JP Boy's Cricketer's</h1> -->
+
+<!-- <div class="menuIcon" onclick="toggleMenu()">
+    ☰
+</div> -->
+
+<div style="display:flex;align-items:center;gap:10px;">
+<div class="nav-links">
+
+  <!-- <div id="sideMenu" class="sideMenu"> -->
+<a href="register.html">Register</a>
+<a href="owner.html">Owner's</a>
+<a href="player.html">Player's</a>
+<a href="auction.html">Admin Auction</a>
+<a href="records.html">Season Records</a>
+<a href="auction-live.html">Live Action</a>
+<a href="rules.html">Tournament Rules</a>
+<!-- <a href="monhtly kit payments.html">Monthly Kit Amount</a> -->
+ <!-- <a href="schedule.html">Schedule</a> -->
+<a href="admin-login.html">Admin Login</a>
+<a href="contact.html">Contact Us</a>
+<a href="wheel spinning.html">Wheel Spinning</a>
+
+</div>
+
+<!-- /* Notification Bell Icon */ -->
+
+<div id="notificationBell" onclick="toggleNotifications()">
+  🔔
+  <span id="notifCount">0</span>
+</div>
+
+</div>
+
+<div class="hamburger" onclick="toggleMenu()">☰</div>
+
+<div class="mobile-menu" id="mobileMenu">
+<a href="register.html">Register</a>
+<a href="owner.html">Owner's</a>
+<a href="player.html">Player's</a>
+<a href="auction.html">Admin Auction</a>
+<a href="records.html">Season Records</a>
+<a href="auction-live.html">Live Action</a>
+<a href="rules.html">Tournament Rules</a>
+<!-- <a href="monhtly kit payments.html">Monthly Kit Amount</a> -->
+ <!-- <a href="schedule.html">Schedule</a> -->
+<a href="admin-login.html">Admin Login</a>
+<a href="contact.html">Contact Us</a>
+
+</div>
+</header>
+
+<div id="notificationBox">
+  <h3 style="margin-bottom:10px;">📢 Notifications</h3>
+  <div id="notifList">Loading...</div>
+</div>
+
+
+
+
+<!-- 🔥 ADMIN POPUP NOTIFICATION -->
+<div id="adminPopup" style="
+  display:none;
+  position:fixed;
+  top:0;left:0;
+  width:100%;height:100%;
+  background:rgba(0,0,0,0.75);
+  justify-content:center;
+  align-items:center;
+  z-index:9999;
+">
+ <div style="
+  background:rgba(255,255,255,0.95);
+  padding:22px;
+  border-radius:16px;
+  width:320px;
+  text-align:center;
+  box-shadow:0 8px 25px rgba(0,0,0,0.3);
+  backdrop-filter: blur(10px);
+  border:1px solid rgba(0,0,0,0.1);
+   animation: popupBounce 0.4s ease;
+">
+    <h3 id="popupTitle" style="
+  color:#0d47a1;
+  font-size:20px;
+  margin-bottom:10px;
+  font-weight:700;
+">📢 Notification</h3>
+
+   <p id="popupBody" style="
+  margin:10px 0;
+  color:#333;
+  font-size:14px;
+  line-height:1.6;
+"></p>
+
+   <button onclick="closePopup()" style="
+  background:linear-gradient(90deg,#ff9800,#ff5722);
+  color:#fff;
+  border:none;
+  padding:10px 18px;
+  border-radius:10px;
+  cursor:pointer;
+  font-weight:600;
+  margin-top:12px;
+  box-shadow:0 4px 10px rgba(0,0,0,0.2);
+">
+Close
+</button>
+  </div>
+</div>
+
+<div class="announcement" id="announcement">
+<div class="marquee">
+<span>📢🔥 **Attention Team Members!** 🔥
+
+🏏 VMC Cricketer's Tournament Season-1 will be conducting 25th ,26th & 27th December 2026 ,So make your availabilites on this date and book your slot. For more latest updates kindly wait..💪🔥
+</span>
+</div>
+<span class="close-announce" onclick="hideAnnouncement()">✖</span>
+</div>
+
+<div class="announcement-bar" id="seasonAnnouncement">
+
+<!-- <div id="birthdayBox" style="
+  display:none;
+  background:linear-gradient(90deg,#ff4081,#ff9800);
+  color:#fff;
+  padding:12px;
+  text-align:center;
+  font-weight:600;
+"></div> -->
+
+<div id="birthdayBox" style="display:none;">
+  <div class="birthday-banner">
+    🎉 Happy Birthday 🎂<br>
+    <span id="birthdayNames"></span>
+    <div class="sub-text">May all your dreams come true ✨</div>
+  </div>
+</div>
+
+
+<span>
+🏏 Season-1 starts in
+<span id="seasonTimer">Loading...</span>
+</span>
+<button class="announce-close" onclick="hideCountdown()">✖</button>
+</div>
+
+
+
+<!-- APK DOWNLOAD ANNOUNCEMENT -->
+<!-- <div id="apkDownloadBox" class="apk-download-box">
+
+    <button class="apk-close-btn"
+            onclick="closeApkDownload()"
+            title="Close">
+        ✕
+    </button>
+
+    <h2>📱 Download JP Boys Android App</h2>
+
+    <p>
+        Get the official JP Boy's Cricketer's app and enjoy
+        all tournament updates!
+    </p>
+
+    <a href="https://github.com/kolurumesh-kb/JP-Boy-s-Cricketer-s/releases/tag/v3.0"
+       target="_blank"
+       class="apk-download-btn">
+        ⬇ Download APK
+    </a>
+
+    <p class="apk-version">Latest Android Version: 3.0</p>
+
+</div> -->
+
+</div>
+
+<div class="carousel">
+<button class="carousel-btn prev" onclick="prevSlide()">❮</button>
+<button class="carousel-btn next" onclick="nextSlide()">❯</button>
+
+<div class="carousel-track" id="carouselTrack">
+
+<div class="slide">
+<img src="assets/images/VMC Cricketer’s Tournament Season 1.png">
+<div class="caption">
+<h2>⭐ VMC Cricketer's Tournament Rules </h2>
+</div>
+</div>
+
+<!-- <div class="slide">
+<img src="assets/images/Season4Winner.jpeg">
+<div class="caption">
+<h2>🏆 Season-4 Winner</h2>
+<p>MegaStar Cricketer's</p>
+</div>
+</div>
+
+<div class="slide">
+<img src="assets/images/Season4Runner.jpeg">
+<div class="caption">
+<h2>🥈 Season -4 Runner</h2>
+<p>Spartan Stricker's</p>
+</div>
+</div> -->
+
+<!-- <div class="slide">
+<img src="assets/images/Player of the tournament season4.jpeg">
+<div class="caption">
+<h2>⭐ Season -4 Player of Tournament</h2>
+<p>Naveen ( Kempa )</p>
+</div>
+</div> -->
+
+</div>
+</div>
+
+<footer>
+  <p>👀 Viewer's: <b id="liveVisits">Loading...</b><br></p>
+<p>
+🏏 VMC Cricketer's © 2026 | Developed By KBU Software Pvt Ltd.<br>
+📱 Version: <span id="appVersion"></span>
+</p>
+<div id="adminTrigger" style="text-align:center;font-size:12px;opacity:0.2">
+© VMC
+</div>
+</footer>
+
+<script>
+let tapCount=0;
+document.getElementById("adminTrigger").onclick=()=>{
+tapCount++;
+if(tapCount===7){window.location.href="admin.html";}
+};
+
+/* ===== CAROUSEL SCRIPT ===== */
+let idx=0;
+const track=document.getElementById("carouselTrack");
+const totalSlides=track.children.length;
+let autoSlide;
+
+function updateSlide(){
+track.style.transform=`translateX(-${idx*100}%)`;
+}
+
+function nextSlide(){
+idx=(idx+1)%totalSlides;
+updateSlide();
+resetAutoSlide();
+}
+
+function prevSlide(){
+idx=(idx-1+totalSlides)%totalSlides;
+updateSlide();
+resetAutoSlide();
+}
+
+function startAutoSlide(){
+autoSlide=setInterval(()=>{
+idx=(idx+1)%totalSlides;
+updateSlide();
+},30000);
+}
+
+function resetAutoSlide(){
+clearInterval(autoSlide);
+startAutoSlide();
+}
+
+startAutoSlide();
+
+/* ===== SWIPE SUPPORT (NEW) ===== */
+let startX=0;
+let endX=0;
+const carousel=document.querySelector(".carousel");
+
+carousel.addEventListener("touchstart",(e)=>{
+startX=e.touches[0].clientX;
+},{passive:true});
+
+carousel.addEventListener("touchmove",(e)=>{
+endX=e.touches[0].clientX;
+},{passive:true});
+
+carousel.addEventListener("touchend",()=>{
+let diff=startX-endX;
+if(Math.abs(diff)>50){
+if(diff>0){
+nextSlide();
+}else{
+prevSlide();
+}
+}
+});
+
+/* ===== Countdown ===== */
+const seasonStart=new Date("2026-12-25T06:30:00").getTime();
+const timer=document.getElementById("seasonTimer");
+
+function updateCountdown(){
+const now=new Date().getTime();
+const diff=seasonStart-now;
+if(diff<=0){timer.innerHTML="🔴 LIVE NOW";return;}
+const d=Math.floor(diff/(1000*60*60*24));
+const h=Math.floor((diff/(1000*60*60))%24);
+const m=Math.floor((diff/(1000*60))%60);
+const s=Math.floor((diff/1000)%60);
+timer.innerHTML=`${d}d ${h}h ${m}m ${s}s`;
+}
+setInterval(updateCountdown,1000);
+updateCountdown();
+
+// Website humburger
+
+// function toggleMenu(){
+
+//     document
+//         .getElementById("sideMenu")
+//         .classList
+//         .toggle("active");
+
+// }
+
+// Mobile Humburger
+
+function toggleMenu(){
+const m=document.getElementById("mobileMenu");
+m.style.display=m.style.display==="flex"?"none":"flex";
+}
+function hideAnnouncement(){
+document.getElementById("announcement").style.display="none";
+}
+function hideCountdown(){
+document.getElementById("seasonAnnouncement").style.display="none";
+}
+
+
+
+
+
+
+
+
+
+
+function closeApkDownload() {
+    document.getElementById("apkDownloadBox").style.display = "none";
+}
+
+</script>
+
+
+<!-- REALTIME VISIT COUNTER -->
+<!-- ONLY showing changed parts clearly, rest remains same -->
+
+<!-- ================= VERSION + UPDATE FIX ================= -->
+<!-- ONLY showing IMPORTANT FIXED PARTS clearly -->
+<!-- YOUR FULL CODE REMAINS SAME, ONLY BELOW CHANGES APPLIED -->
+
+<!-- ❌ REMOVE THIS LINE -->
+<!-- <script src="capacitor.js"></script> -->
+
+
+<!-- ================= FIREBASE SCRIPT FIX ================= -->
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
+import {
+getFirestore, doc, getDoc, setDoc,
+updateDoc, onSnapshot, increment,
+collection, orderBy, query, limit,addDoc
+} from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
+
+const app = initializeApp({
+apiKey: "AIzaSyBIY7j6h-3BcauIWe7hPp6Z4EpZ4vIAGlI",
+
+  authDomain: "vmccricketers.firebaseapp.com",
+
+   projectId: "vmccricketers",
+});
+
+const db = getFirestore(app);
+
+
+/*  Birthday */
+
+function checkBirthdays(players){
+
+  const today = new Date();
+  const tMonth = today.getMonth() + 1;
+  const tDate = today.getDate();
+
+  return players.filter(p => {
+
+    if(!p.dob) return false;
+
+    const dob = new Date(p.dob);
+
+    return (
+      dob.getMonth() + 1 === tMonth &&
+      dob.getDate() === tDate
+    );
+
+  });
+
+}
+
+const visitRef = doc(db,"siteStats","visits");
+
+increaseVisitCount();
+
+/* ================= VISIT COUNTER ================= */
+
+async function increaseVisitCount(){
+
+  try{
+
+    const snap = await getDoc(visitRef);
+
+    if(!snap.exists()){
+      // First time create doc
+      await setDoc(visitRef, { count: 1 });
+    }else{
+      // Increment safely
+      await updateDoc(visitRef, {
+        count: increment(1)
+      });
+    }
+
+  }catch(e){
+    console.log("❌ Visit count error", e);
+  }
+
+}
+
+
+
+onSnapshot(visitRef,(d)=>{
+if(d.exists()){
+const el=document.getElementById("liveVisits");
+if(el) el.innerText=d.data().count || 0;
+}
+});
+
+/* ================= VERSION SAFE ================= */
+
+const CURRENT_VERSION = "1.0";
+
+async function checkVersion(){
+
+  const el = document.getElementById("appVersion");
+  if(el) el.innerText = CURRENT_VERSION;
+
+  try{
+    const snap = await getDoc(doc(db,"settings","app"));
+
+    if(!snap.exists()){
+      console.log("⚠ No version doc");
+      return;
+    }
+
+    const latestVersion = String(snap.data().version || "").trim();
+
+    // if(latestVersion && latestVersion !== CURRENT_VERSION){
+    //   alert("🚨 New Update Available!");
+    // }
+
+    const seenVersion = localStorage.getItem("seen_update_version");
+
+if(latestVersion && latestVersion !== CURRENT_VERSION){
+
+  // ✅ show alert only if not already shown
+  if(seenVersion !== latestVersion){
+
+    alert("🚨 New Update Available!");
+
+    // ✅ save that alert shown for this version
+    localStorage.setItem("seen_update_version", latestVersion);
+  }
+}
+
+  }catch(e){
+    console.log("❌ Version check error", e);
+  }
+}
+checkVersion();
+
+/* ================= NOTIFICATION REALTIME ================= */
+
+/* ================= NOTIFICATION REALTIME ================= */
+
+const notifListEl = document.getElementById("notifList");
+const notifCountEl = document.getElementById("notifCount");
+
+let firstLoad = true; // ✅ prevent sound on initial load
+
+function playNotificationSound(){
+  const audio = new Audio("https://actions.google.com/sounds/v1/alarms/notification_simple-01.mp3");
+  audio.play().catch(()=>{});
+}
+
+try{
+
+const q = query(
+  collection(db,"notifications"),
+  orderBy("time","desc"),
+  limit(5) // 🔥 only latest 5
+);
+
+onSnapshot(q,(snap)=>{
+
+  let html = "";
+  let unreadCount = 0;
+
+  const lastRead = Number(localStorage.getItem("jp_notifications_read") || 0);
+
+  let hasNewNotification = false;
+
+  // 🔥 FIX: force correct sorting (latest first)
+  const docs = snap.docs;
+
+  docs.sort((a,b)=>{
+    const t1 = a.data().time?.toMillis ? a.data().time.toMillis() : a.data().time || 0;
+    const t2 = b.data().time?.toMillis ? b.data().time.toMillis() : b.data().time || 0;
+    return t2 - t1;
+  });
+
+  docs.forEach((doc, index)=>{
+    const d = doc.data() || {};
+
+    const notifTime = d.time?.toMillis ? d.time.toMillis() : d.time || 0;
+
+    if(notifTime > lastRead){
+      unreadCount++;
+      hasNewNotification = true;
+    }
+
+    const isLatest = index === 0; // ✅ always correct now
+
+    html += `
+      <div class="notification-item ${isLatest ? 'latest' : ''}" style="border-bottom:1px solid #333;padding:10px 0;">
+        <div style="font-weight:600;">${d.title || "No Title"}</div>
+        <div style="font-size:13px;opacity:0.8;">${d.body || ""}</div>
+      </div>
+    `;
+  });
+
+  notifListEl.innerHTML = html || "<p style='text-align:center;'>No notifications 📭</p>";
+
+  // ✅ badge count
+  if(unreadCount > 0){
+    notifCountEl.style.display="block";
+    notifCountEl.innerText = unreadCount;
+  }else{
+    notifCountEl.style.display="none";
+  }
+
+  // 🔥 play sound only for new notifications
+  if(!firstLoad && hasNewNotification){
+    playNotificationSound();
+  }
+
+  firstLoad = false;
+
+});
+
+}catch(e){
+  console.log("❌ Notification error", e);
+}
+
+/* ================= GLOBAL FUNCTION FIX ================= */
+
+// window.toggleNotifications = function(){
+//   const box = document.getElementById("notificationBox");
+
+//   if(!box) return;
+
+//   box.style.display = box.style.display === "block" ? "none" : "block";
+
+//   if(box.style.display === "block" && notifCountEl){
+//     notifCountEl.style.display = "none";
+//   }
+// };
+
+window.toggleNotifications = function(){
+
+  const box = document.getElementById("notificationBox");
+  if(!box) return;
+
+  const isOpen = box.style.display === "block";
+  box.style.display = isOpen ? "none" : "block";
+
+  if(!isOpen){
+
+    // ✅ get latest notification time
+    const items = document.querySelectorAll("#notifList div");
+
+    if(items.length > 0){
+      const firstDoc = document.querySelector("#notifList .notification-item");
+
+if(firstDoc){
+  const latestTime = Date.now(); // still ok fallback
+  localStorage.setItem("vmc_notifications_read", latestTime);
+}
+    }
+
+    if(notifCountEl){
+      notifCountEl.style.display = "none";
+    }
+  }
+};
+
+/* ================= OUTSIDE CLICK SAFE ================= */
+
+document.addEventListener("click",(e)=>{
+  const box = document.getElementById("notificationBox");
+  const bell = document.getElementById("notificationBell");
+
+  if(bell && box && !bell.contains(e.target) && !box.contains(e.target)){
+    box.style.display="none";
+  }
+});
+
+
+/* ================= ADMIN POPUP NOTIFICATION ================= */
+
+// const popup = document.getElementById("adminPopup");
+// const popupTitle = document.getElementById("popupTitle");
+// const popupBody = document.getElementById("popupBody");
+
+
+
+import { where } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
+
+const popup = document.getElementById("adminPopup");
+const popupTitle = document.getElementById("popupTitle");
+const popupBody = document.getElementById("popupBody");
+
+// let popupShown = false;
+
+ let lastPopupTime = 0;
+
+onSnapshot(
+  query(
+    collection(db,"notifications"),
+    where("type","==","admin"),   // ✅ FILTER
+    orderBy("time","desc"),
+    limit(1)
+  ),
+  (snap)=>{
+
+    if(snap.empty) return;
+
+    const docData = snap.docs[0].data();
+
+
+
+    const currentTime = docData.time?.toMillis
+      ? docData.time.toMillis()
+      : docData.time || 0;
+
+    // ✅ prevent repeat popup
+    if(currentTime <= lastPopupTime) return;
+
+    lastPopupTime = currentTime;
+
+    console.log("ADMIN SNAP:", snap.docs.length);
+
+    // // ✅ ONLY ADMIN
+    // if(docData.type !== "admin") return;
+
+    // const currentTime = docData.time || 0;
+
+    // // ✅ prevent repeat popup
+    // if(currentTime <= lastPopupTime) return;
+
+    // lastPopupTime = currentTime;
+
+    popupTitle.innerText = docData.title || "Notification";
+    popupBody.innerText = docData.body || "";
+
+    popup.style.display = "flex";
+
+    setTimeout(() => {
+      popup.style.display = "none";
+    }, 10000);
+
+  }
+);
+
+
+async function triggerBirthdayNotification(names){
+
+  const todayKey = new Date().toISOString().split("T")[0];
+  const ref = doc(db,"settings","birthday");
+
+  const snap = await getDoc(ref);
+  const lastSent = snap.exists() ? snap.data().lastSent : "";
+
+  // ✅ STOP if already sent today
+  if(lastSent === todayKey){
+    console.log("🎂 Already sent today");
+    return;
+  }
+
+  // ✅ ADD NOTIFICATION
+  await addDoc(collection(db,"notifications"),{
+    title:"🎂 Birthday Alert",
+    body:`Wish Happy Birthday to ${names}`,
+    time: Date.now(),
+    //  type:"admin"  // 🔥 IMPORTANT CHANGE
+    type:"birthday"
+  });
+
+  // ✅ SAVE FLAG
+  await setDoc(ref,{ lastSent: todayKey });
+
+  console.log("🎉 Birthday notification sent");
+}
+
+onSnapshot(collection(db,"players"), async (snap)=>{
+
+  const players = [];
+  snap.forEach(d => players.push(d.data()));
+
+  const birthdayPlayers = checkBirthdays(players);
+
+  const box = document.getElementById("birthdayBox");
+
+  if(birthdayPlayers.length > 0){
+
+    const names = birthdayPlayers.map(p => p.name).join(", ");
+
+    // box.innerHTML = `
+    //   🎉 Happy Birthday 🎂<br>
+    //   <b>${names}</b>
+    // `;
+    // box.style.display = "block";
+
+    document.getElementById("birthdayNames").innerText = names;
+box.style.display = "block";
+
+/* 🎊 CONFETTI EFFECT */
+for(let i=0;i<25;i++){
+  const conf = document.createElement("div");
+  conf.className = "confetti";
+
+  conf.style.left = Math.random()*100 + "%";
+  conf.style.background = ["#ffeb3b","#ff4081","#00e5ff","#76ff03"][Math.floor(Math.random()*4)];
+  conf.style.animationDuration = (2 + Math.random()*3) + "s";
+
+  box.querySelector(".birthday-banner").appendChild(conf);
+
+  setTimeout(()=>conf.remove(),4000);
+}
+
+    await triggerBirthdayNotification(names);
+
+  }else{
+    box.style.display = "none";
+  }
+
+});
+
+
+
+window.closePopup = function(){
+  const popup = document.getElementById("adminPopup");
+  if(popup) popup.style.display = "none";
+};
+
+
+</script>
+
+<!-- ================= REMOVE OLD BUG LINE ================= -->
+<!-- ❌ DELETE THIS LINE FROM YOUR FILE -->
+<!-- document.getElementById("appVersion").innerText = APP_VERSION; -->
+
+
+<!-- <script>
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    location.reload(true);
+  }, 1000);
+}); -->
+
+
+
+
+<!-- <script>
+const APP_VERSION = "1.7"; // 🔥 change this when you update site
+
+const savedVersion = localStorage.getItem("app_version");
+
+if (savedVersion !== APP_VERSION) {
+  // New update detected
+  localStorage.setItem("app_version", APP_VERSION);
+
+  // Show update message (optional)
+  alert("New update available 🔄");
+
+  // Reload only once
+  location.reload();
+}
+</script>  -->
+
+
+<!-- </script> -->
+ 
+
+<!-- <script>
+
+
+document.getElementById("appVersion").innerText = APP_VERSION;
+
+
+
+</script> -->
+
+<!-- <script src="capacitor.js"></script> -->
+
+<script>
+// window.addEventListener("load", async () => {
+
+//   alert("APP STARTED");
+
+//   const { PushNotifications } = window.Capacitor.Plugins;
+
+//   const perm = await PushNotifications.requestPermissions();
+
+//   if (perm.receive === 'granted') {
+//     await PushNotifications.register();
+//   }
+
+//   PushNotifications.addListener('registration', token => {
+//     alert("TOKEN: " + token.value);
+//   });
+
+//   PushNotifications.addListener('pushNotificationReceived', notification => {
+//   console.log("🔔 Notification:", notification);
+//   alert(notification.title + " - " + notification.body);
+// });
+// });
+
+
+window.addEventListener("load", async () => {
+
+  console.log("🔥 Push init started");
+
+  if (!window.Capacitor) {
+    console.log("❌ Not app environment");
+    return;
+  }
+
+  const { PushNotifications } = Capacitor.Plugins;
+
+  const perm = await PushNotifications.requestPermissions();
+
+  if (perm.receive !== 'granted') {
+    alert("Enable notifications bro");
+    return;
+  }
+
+  await PushNotifications.register();
+
+  // ✅ TOKEN SAVE
+  PushNotifications.addListener('registration', async (token) => {
+
+    console.log("🔥 TOKEN:", token.value);
+
+    try {
+      await setDoc(doc(db, "fcmTokens", token.value), {
+        token: token.value,
+        createdAt: Date.now()
+      });
+
+      console.log("✅ Token saved");
+
+    } catch (e) {
+      console.log("❌ Save failed", e);
+    }
+
+  });
+
+  // ✅ ✅ CORRECT PLACE (OUTSIDE)
+  PushNotifications.addListener('pushNotificationActionPerformed', (notification) => {
+
+    console.log("📲 Notification Clicked:", notification);
+
+    const box = document.getElementById("notificationBox");
+
+    if(box){
+      box.style.display = "block";
+      box.scrollTop = 0; // optional smooth UX
+    }
+
+    const notifCountEl = document.getElementById("notifCount");
+    if(notifCountEl){
+      notifCountEl.style.display = "none";
+    }
+
+  });
+
+});
+</script>
+
+</body>
+</html>
+
+
+
+

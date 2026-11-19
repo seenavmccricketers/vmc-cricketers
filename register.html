@@ -1,0 +1,1334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VMC Cricketer's</title>
+
+<style>
+*{box-sizing:border-box;font-family:Segoe UI,sans-serif}
+
+body{
+  margin:0;
+  background:#0b1c2d;
+  color:#fff;
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+}
+
+/* HEADER + FOOTER */
+header,footer{
+  background:linear-gradient(90deg,#1e3c72,#2a5298);
+  padding:14px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  font-weight:bold;
+}
+
+header a{
+  background:#ffd700;
+  color:#000;
+  padding:6px 14px;
+  border-radius:20px;
+  text-decoration:none;
+  font-size:14px;
+}
+
+footer{
+  position:fixed;
+  bottom:0;
+  width:100%;
+  justify-content:center;
+}
+
+main{flex:1;padding:16px;padding-bottom:90px}
+
+/* 🔔 ANNOUNCEMENT SECTION */
+.announce{
+  background:linear-gradient(135deg,#102840,#173d61);
+  border-left:6px solid #ffd700;
+  border-radius:12px;
+  padding:12px 14px;
+  margin-bottom:16px;
+  box-shadow:0 0 12px rgba(0,0,0,0.35);
+}
+
+.announce h3{
+  margin:0 0 6px 0;
+  /* color:#ffd700; */
+   color:red;
+}
+
+.announce h5{
+  margin:0;
+  font-size:14px;
+  /* color:red; */
+  color:#ffd700;
+}
+
+/* FORM */
+form{
+  max-width:420px;
+  margin:auto;
+  background:#102840;
+  padding:16px;
+  border-radius:14px;
+}
+
+label{display:block;margin-top:12px}
+
+input,select,textarea,button{
+  width:100%;
+  padding:10px;
+  margin-top:6px;
+  border-radius:8px;
+  border:none;
+}
+
+button{
+  margin-top:16px;
+  background:#ffd700;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+/* PROFILE PHOTO */
+.photo-box{text-align:center;margin-bottom:10px}
+
+.preview{
+  width:120px;
+  height:120px;
+  border-radius:50%;
+  object-fit:cover;
+  background:#fff;
+  display:none;
+  margin:auto;
+}
+
+.upload-text{
+  margin-top:6px;
+  font-size:13px;
+  color:#9ad1ff;
+}
+
+/* QR */
+.qr-box{text-align:center;margin:14px 0}
+.qr-box img{width:180px;background:#fff;padding:6px}
+
+/* LOADER */
+.loader-overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.75);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:999;
+}
+
+.loader-box{
+  background:#102840;
+  padding:30px 40px;
+  border-radius:14px;
+  text-align:center;
+}
+
+.spinner{
+  width:50px;
+  height:50px;
+  border:5px solid #ccc;
+  border-top:5px solid #ffd700;
+  border-radius:50%;
+  animation:spin 1s linear infinite;
+  margin:auto;
+}
+
+@keyframes spin{
+  to{transform:rotate(360deg)}
+}
+
+
+
+
+.error-text{
+  color:#ff4d4d;
+  font-size:13px;
+  margin-top:5px;
+}
+
+.size-text{
+  font-size:13px;
+  margin-top:4px;
+}
+
+.size-valid{
+  color:#00ff88;
+}
+
+.size-warning{
+  color:#ff4d4d;
+}
+
+
+
+
+
+
+@keyframes pop {
+  0%{transform:scale(0)}
+  80%{transform:scale(1.2)}
+  100%{transform:scale(1)}
+}
+
+
+
+/* ===== SUCCESS SCREEN ===== */
+
+.success-overlay{
+  position:fixed;
+  inset:0;
+  background:radial-gradient(circle at center,#0b1c2d,#000);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:2000;
+  animation:fadeIn 0.6s ease forwards;
+}
+
+.success-box{
+  text-align:center;
+  animation:slideUp 0.8s ease forwards;
+}
+
+.success-logo{
+  width:120px;
+  height:120px;
+  border-radius:50%;
+  object-fit:cover;
+  border:4px solid #ffd700;
+  box-shadow:0 0 25px #ffd700;
+  animation:logoPop 0.8s ease forwards;
+}
+
+.success-box h2{
+  margin-top:20px;
+  font-size:22px;
+  color:#ffd700;
+}
+
+.success-box p{
+  margin-top:8px;
+  color:#9ad1ff;
+}
+
+.success-check{
+  font-size:50px;
+  color:#00ff88;
+  margin-top:20px;
+  animation:pop 0.6s ease;
+}
+
+/* Animations */
+
+@keyframes fadeIn{
+  from{opacity:0}
+  to{opacity:1}
+}
+
+@keyframes slideUp{
+  from{transform:translateY(40px);opacity:0}
+  to{transform:translateY(0);opacity:1}
+}
+
+@keyframes logoPop{
+  0%{transform:scale(0)}
+  70%{transform:scale(1.2)}
+  100%{transform:scale(1)}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</style>
+</head>
+
+<body>
+
+<header>
+  <div>🏏 Player Registration </div>
+  <a href="index.html">Dashboard</a>
+</header>
+
+<main>
+
+<!-- 🔔 ANNOUNCEMENT -->
+<div class="announce">
+  <h3>📢 Important Notice: </h3>
+  <h5>
+  
+Player's Must Complete The Registration Process & Upload the Profile Photo & Payment Receipt. Kindly ensure that both the Profile Photo and Payment Receipt are under 200KB Only. After successful registration, please verify your status on the Player's Page.
+  </h5>
+</div>
+
+<form id="regForm">
+
+<!-- <h5 style="color: red;">Note : Please Upload the Photo's Size 1MB only for Profile Photo and Receipt </h5> -->
+
+<div class="upload-text">Upload Profile Photo</div>
+<div class="photo-box">
+  <img id="preview" class="preview">
+  <input id="photo" type="file" accept="image/*" required>
+  <div id="photoSize" class="size-text"></div>
+  <div id="photoError" class="error-text"></div>
+</div>
+
+<label>Full Name</label>
+<input id="name" placeholder="Enter Name" required>
+
+<label>Mobile</label>
+<input id="mobile" type="tel" inputmode="numeric" maxlength="10" pattern="[6-9][0-9]{9}" placeholder="Enter 10-digit Mobile Number" required>
+<div id="mobileError" class="error-text"></div>
+
+<label>Role</label>
+<select id="role" required>
+  <option value="">Select</option>
+  <option>Batsman</option>
+  <option>Bowler</option>
+  <option>All-Rounder</option>
+  <option>Wicket -Keeper Batsman</option>
+</select>
+
+<label>Batting</label>
+<select id="batting" required>
+  <option value="">Select</option>
+  <option>Right Hand</option>
+  <option>Left Hand</option>
+</select>
+
+<label>Bowling</label>
+<select id="bowling" required>
+  <option value="">Select</option>
+  <option>Right Arm</option>
+  <option>Left Arm</option>
+  <option>Not a Bowler</option>
+</select>
+
+<label>DOB</label>
+<input id="dob" type="date" required>
+
+<label>Address</label>
+<textarea id="address" placeholder="Enter the address" required></textarea>
+
+<h3>💳 Payment Section :</h3>
+
+<label>Pay the Registration Fee Rs.800 Only</label>
+<br>
+<label>Pay Using UPI ID : umeshcse09@ybl <br>or</br> Use Below Scanner</label>
+
+
+<div class="qr-box">
+  <img src="assets/images/SBI Scanner.png">
+  <p>Note : Upload receipt after payment</p>
+</div>
+
+
+
+<!-- <div style="text-align:center;margin-top:10px">
+
+  <button type="button" onclick="payUPI()" style="
+    background:#5f259f;
+    color:#fff;
+    margin-bottom:8px;
+  ">
+    📲 Pay with PhonePe / GPay
+  </button>
+
+  <p style="font-size:13px;color:#9ad1ff;margin-top:6px">
+    (Opens UPI apps automatically)
+  </p>
+
+</div> -->
+
+<!-- <label>Pay Using the below app's</label>
+<div style="text-align:center;margin-top:12px">
+
+  <!-- PhonePe -->
+  <!-- <button type="button" onclick="payPhonePe()" style="
+    background:#5f259f;
+    color:#fff;
+    margin-bottom:10px;
+  ">
+    📲 Pay with PhonePe
+  </button> -->
+
+  <!-- Google Pay -->
+  <!-- <button type="button" onclick="payGPay()" style="
+    background:#0f9d58;
+    color:#fff;
+  ">
+    📲 Pay with Google Pay
+  </button> -->
+
+  <!-- <p style="font-size:13px;color:#9ad1ff;margin-top:8px">
+    (Opens selected UPI app)
+  </p> -->
+
+    <!-- ✅ Helpful message instead of popup -->
+  <!-- <p style="font-size:13px;color:#9ad1ff;margin-top:10px">
+    If payment app didn’t open, please use UPI ID or QR code above.
+  </p> -->
+<!-- 
+</div> --> 
+
+
+
+
+
+
+
+<label>Receipt</label>
+<input id="receipt" type="file" accept="image/*" required>
+<div id="receiptSize" class="size-text"></div>
+<div id="receiptError" class="error-text"></div>
+
+
+<!-- UTR Number -->
+<label>UTR Number</label>
+<input
+    id="utr"
+    type="text"
+    inputmode="numeric"
+    maxlength="12"
+    pattern="[0-9]{12}"
+    placeholder="Enter 12-digit UTR Number"
+    required
+>
+<div id="utrError" class="error-text"></div>
+
+
+<!-- <button type="submit">Submit Registration</button> -->
+
+<button type="submit">🚀 Submit Registration</button>
+
+<button type="reset" id="resetFormBtn" style="
+  background:#ff4d4d;
+  color:#fff;
+  margin-top:10px;
+  font-weight:bold;
+">
+  🔄 Reset Form
+</button>
+
+</form>
+</main>
+
+<footer>🏏  VMC Cricketer's © 2026 | Developed By KBU Software Pvt Ltd. </footer>
+
+<div class="loader-overlay" id="loader">
+  <div class="loader-box">
+    <div class="spinner"></div>
+    <p style="margin-top:14px">Uploading… Please wait</p>
+  </div>
+</div>
+
+
+
+
+<script type="module">
+/* ⭐ SAME SCRIPT — UNCHANGED */
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
+import { getFirestore, collection, addDoc, getDocs, getDoc, doc, onSnapshot, setDoc,runTransaction}
+from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
+
+const firebaseConfig={
+
+apiKey: "AIzaSyBIY7j6h-3BcauIWe7hPp6Z4EpZ4vIAGlI",
+
+  authDomain: "vmccricketers.firebaseapp.com",
+
+  projectId: "vmccricketers",
+
+  storageBucket: "vmccricketers.firebasestorage.app",
+
+  messagingSenderId: "241813165395",
+
+  appId: "1:241813165395:web:ffd84d7209529fd272bda6"
+
+};
+
+const app=initializeApp(firebaseConfig);
+const db=getFirestore(app);
+
+/* DOM */
+const regForm=document.getElementById("regForm");
+
+/* =============================
+   REGISTRATION BUTTON CONTROL
+============================= */
+
+const submitBtn =
+  regForm.querySelector("button[type='submit']");
+
+onSnapshot(doc(db,"settings","registration"), snap => {
+
+  if(!snap.exists()) return;
+
+  if(snap.data().open === false){
+
+    submitBtn.disabled = true;
+    submitBtn.style.background = "#777";
+    submitBtn.innerText = "Registration Closed";
+
+  }else{
+
+    submitBtn.disabled = false;
+    submitBtn.innerText = "Submit Registration";
+
+  }
+
+});
+
+
+
+
+const photo=document.getElementById("photo");
+const preview=document.getElementById("preview");
+const receipt=document.getElementById("receipt");
+const loader=document.getElementById("loader");
+
+const photoError=document.getElementById("photoError");
+const receiptError=document.getElementById("receiptError");
+const photoSize=document.getElementById("photoSize");
+const receiptSize=document.getElementById("receiptSize");
+
+const nameInput=document.getElementById("name");
+const mobileInput=document.getElementById("mobile");
+const mobileError=document.getElementById("mobileError");
+const roleInput=document.getElementById("role");
+const battingInput=document.getElementById("batting");
+const bowlingInput=document.getElementById("bowling");
+const dobInput=document.getElementById("dob");
+const addressInput=document.getElementById("address");
+
+const utrInput = document.getElementById("utr");
+const utrError = document.getElementById("utrError");
+
+/* ===== RESET FORM ===== */
+
+regForm.addEventListener("reset", () => {
+
+  setTimeout(() => {
+
+    // Reset profile photo preview
+    preview.src = "";
+    preview.style.display = "none";
+
+    // Clear validation messages
+    photoError.textContent = "";
+    receiptError.textContent = "";
+    mobileError.textContent = "";
+    utrError.textContent = "";
+
+    // Clear file size messages
+    photoSize.textContent = "";
+    receiptSize.textContent = "";
+
+    // Restore size message styling
+    photoSize.className = "size-text";
+    receiptSize.className = "size-text";
+
+  }, 0);
+
+});
+
+mobileInput.addEventListener("input", () => {
+  mobileError.textContent = "";
+});
+
+/* ===== UTR INPUT VALIDATION ===== */
+
+utrInput.addEventListener("input", () => {
+
+    // Allow only numbers and maximum 12 digits
+    utrInput.value = utrInput.value.replace(/\D/g, "").slice(0, 12);
+
+    utrError.textContent = "";
+
+});
+
+/* ===== Helper Functions ===== */
+
+function formatFileSize(bytes){
+  const kb = bytes / 1024;
+  return kb.toFixed(0) + " KB";
+}
+
+// function validateFileSize(file){
+//   const maxSize = 1 * 1024 * 1024; // 1MB
+//   return file.size <= maxSize;
+// }
+
+const MAX_IMAGE_SIZE = 200 * 1024; // 200 KB maximum
+
+function validateFileSize(file){
+  return file.size <= MAX_IMAGE_SIZE;
+}
+
+function toBase64(file){
+ return new Promise(resolve=>{
+  const r=new FileReader();
+  r.onload=()=>resolve(r.result);
+  r.readAsDataURL(file);
+ });
+}
+
+/* ===== Profile Photo Live Validation ===== */
+
+photo.addEventListener("change",()=>{
+  const file = photo.files[0];
+
+  photoError.textContent="";
+  photoSize.textContent="";
+
+  if(!file) return;
+
+  const sizeText = "Uploaded: " + formatFileSize(file.size);
+
+  if(!validateFileSize(file)){
+    photoSize.textContent = sizeText;
+    photoSize.className="size-text size-warning";
+    // photoError.textContent="Profile Photo must be below 200KB (100KB to 200KB recommended).";
+    photoError.textContent = "Profile Photo must not exceed 200 KB.";
+    photo.value="";
+    preview.style.display="none";
+    return;
+  }
+
+  photoSize.textContent = sizeText;
+  photoSize.className="size-text size-valid";
+
+  const reader=new FileReader();
+  reader.onload=e=>{
+    preview.src=e.target.result;
+    preview.style.display="block";
+  };
+  reader.readAsDataURL(file);
+});
+
+/* ===== Receipt Live Validation ===== */
+
+receipt.addEventListener("change",()=>{
+  const file = receipt.files[0];
+
+  receiptError.textContent="";
+  receiptSize.textContent="";
+
+  if(!file) return;
+
+  const sizeText = "Uploaded: " + formatFileSize(file.size);
+
+  if(!validateFileSize(file)){
+    receiptSize.textContent=sizeText;
+    receiptSize.className="size-text size-warning";
+    // receiptError.textContent="Receipt must be below 200KB (100KB to 200KB recommended).";
+    receiptError.textContent = "Receipt must not exceed 200 KB.";
+    receipt.value="";
+    return;
+  }
+
+  receiptSize.textContent=sizeText;
+  receiptSize.className="size-text size-valid";
+});
+
+
+/* ===== APPROVED MOBILE NUMBER CHECK ===== */
+const REGISTRATION_ERROR_MESSAGE =
+  "Server or Network Issue, Please try after sometime.";
+
+function normalizeRegistrationMobile(value){
+  let mobile = String(value || "").replace(/\D/g, "");
+
+  // Accept +91 / 91 prefix but store and check the 10-digit mobile.
+  if(mobile.length === 12 && mobile.startsWith("91")){
+    mobile = mobile.slice(2);
+  }
+
+  return mobile;
+}
+
+// async function isMobileApproved(mobile){
+//   const numberRef = doc(db, "approvedNumbers", mobile);
+//   const numberSnap = await getDoc(numberRef);
+
+//   return numberSnap.exists() &&
+//          String(numberSnap.data().status || "").toUpperCase() === "APPROVED";
+// }
+
+
+async function isMobileApproved(mobile){
+
+  // Read registration settings
+  const settingsRef = doc(db, "settings", "registration");
+  const settingsSnap = await getDoc(settingsRef);
+
+  if(!settingsSnap.exists()){
+    throw new Error("Registration settings not found");
+  }
+
+  const settings = settingsSnap.data();
+
+  // Registration closed
+  if(settings.open === false){
+    return false;
+  }
+
+  // Read mobile number status
+  const numberRef = doc(db, "approvedNumbers", mobile);
+  const numberSnap = await getDoc(numberRef);
+
+  const status = numberSnap.exists()
+    ? String(numberSnap.data().status || "").toUpperCase()
+    : "";
+
+  // Blocked numbers are always rejected
+  if(status === "BLOCKED"){
+    return false;
+  }
+
+  // Open registration: allow any number except BLOCKED
+  if(settings.allowAllNumbers === true){
+    return true;
+  }
+
+  // Whitelist registration: only APPROVED numbers
+  return status === "APPROVED";
+}
+
+
+/* ===== Form Submit ===== */
+
+regForm.addEventListener("submit",async(e)=>{
+ e.preventDefault();
+
+
+ // ===== UTR VALIDATION =====
+
+ utrError.textContent = "";
+
+ const utrNumber = utrInput.value.trim();
+
+ if(!/^[0-9]{12}$/.test(utrNumber)){
+
+    utrError.textContent = "Please enter a valid 12-digit UTR number.";
+
+    utrInput.focus();
+
+    return;
+ }
+
+ // Check the mobile number before reading/uploading images or creating a player.
+ mobileError.textContent = "";
+ const normalizedMobile = normalizeRegistrationMobile(mobileInput.value);
+
+ if(!/^[6-9][0-9]{9}$/.test(normalizedMobile)){
+  mobileError.textContent = "Please enter a valid 10-digit mobile number.";
+  mobileInput.focus();
+  return;
+ }
+
+ mobileInput.value = normalizedMobile;
+
+ loader.style.display = "flex";
+ loader.querySelector("p").textContent = "Checking mobile number...";
+
+ try{
+  const approved = await isMobileApproved(normalizedMobile);
+
+  if(!approved){
+   loader.style.display = "none";
+   mobileError.textContent = REGISTRATION_ERROR_MESSAGE;
+   alert(REGISTRATION_ERROR_MESSAGE);
+   return;
+  }
+ }catch(checkError){
+  console.error("Mobile approval check failed:", checkError);
+  loader.style.display = "none";
+  mobileError.textContent = REGISTRATION_ERROR_MESSAGE;
+  alert(REGISTRATION_ERROR_MESSAGE);
+  return;
+ }
+
+ if(!photo.files[0] || !receipt.files[0]){
+  loader.style.display = "none";
+  alert("Please upload all images");
+  return;
+ }
+
+ if(!validateFileSize(photo.files[0])){
+  loader.style.display = "none";
+  photoError.textContent="Profile Photo must not exceed 200 KB.";
+  return;
+ }
+
+ if(!validateFileSize(receipt.files[0])){
+  loader.style.display = "none";
+  receiptError.textContent="Receipt must not exceed 200 KB.";
+  return;
+ }
+
+ loader.querySelector("p").textContent = "Uploading… Please wait";
+ loader.style.display = "flex";
+
+ try{
+  const photo64=await toBase64(photo.files[0]);
+  const receipt64=await toBase64(receipt.files[0]);
+
+  // Generate Player ID
+const snapshot = await getDocs(collection(db,"players"));
+const count = snapshot.size + 1;
+
+const playerId = "VMC" + String(count).padStart(3,'0');
+
+
+
+//  await addDoc(collection(db,"players"),{
+
+//    playerId: playerId,
+
+//    name:nameInput.value.trim(),
+//    mobile:normalizedMobile,
+//    role:roleInput.value,
+//    batting:battingInput.value,
+//    bowling:bowlingInput.value||"NA",
+//    dob:dobInput.value,
+//    address:addressInput.value.trim(),
+//    photo:photo64,
+//    receipt:receipt64,
+//    sold:false,
+//    createdAt:Date.now()
+
+// });
+
+
+// ========================================
+// ONE MOBILE NUMBER = ONE REGISTRATION
+// ========================================
+
+// const registrationRef = doc(
+//   db,
+//   "registrationNumbers",
+//   normalizedMobile
+// );
+
+// const playerRef = doc(collection(db, "players"));
+
+// await runTransaction(db, async (transaction) => {
+
+//   // Check whether this mobile number is already registered
+//   const existingRegistration = await transaction.get(registrationRef);
+
+//   if (existingRegistration.exists()) {
+//     throw new Error("MOBILE_ALREADY_REGISTERED");
+//   }
+
+//   // Create the mobile number lock
+//   transaction.set(registrationRef, {
+//     mobile: normalizedMobile,
+//     playerDocId: playerRef.id,
+//     playerId: playerId,
+//     name: nameInput.value.trim(),
+//     registeredAt: Date.now()
+//   });
+
+//   // Save the player details
+//   transaction.set(playerRef, {
+//     playerId: playerId,
+//     name: nameInput.value.trim(),
+//     mobile: normalizedMobile,
+//     role: roleInput.value,
+//     batting: battingInput.value,
+//     bowling: bowlingInput.value || "NA",
+//     dob: dobInput.value,
+//     address: addressInput.value.trim(),
+//     photo: photo64,
+//     receipt: receipt64,
+//     sold: false,
+//     createdAt: Date.now()
+//   });
+
+// });
+
+
+
+
+const registrationRef = doc(
+  db,
+  "registrationNumbers",
+  normalizedMobile
+);
+
+// ===== UTR DUPLICATE CHECK =====
+
+const utrRef = doc(
+  db,
+  "registrationUTRs",
+  utrNumber
+);
+
+const playerRef = doc(collection(db, "players"));
+
+await runTransaction(db, async (transaction) => {
+
+  // Check duplicate mobile
+  const existingRegistration =
+    await transaction.get(registrationRef);
+
+  if (existingRegistration.exists()) {
+    throw new Error("MOBILE_ALREADY_REGISTERED");
+  }
+
+  // Check duplicate UTR
+  const existingUTR =
+    await transaction.get(utrRef);
+
+  if (existingUTR.exists()) {
+    throw new Error("UTR_ALREADY_REGISTERED");
+  }
+
+  // Save mobile lock
+  transaction.set(registrationRef, {
+    mobile: normalizedMobile,
+    playerDocId: playerRef.id,
+    playerId: playerId,
+    name: nameInput.value.trim(),
+    registeredAt: Date.now()
+  });
+
+  // Save UTR lock
+  transaction.set(utrRef, {
+    utr: utrNumber,
+    playerDocId: playerRef.id,
+    playerId: playerId,
+    name: nameInput.value.trim(),
+    registeredAt: Date.now()
+  });
+
+  // Save player details
+  transaction.set(playerRef, {
+    playerId: playerId,
+    name: nameInput.value.trim(),
+    mobile: normalizedMobile,
+    utr: utrNumber,
+    role: roleInput.value,
+    batting: battingInput.value,
+    bowling: bowlingInput.value || "NA",
+    dob: dobInput.value,
+    address: addressInput.value.trim(),
+    photo: photo64,
+    receipt: receipt64,
+    sold: false,
+    createdAt: Date.now()
+  });
+
+});
+
+
+// console.log("Player registration completed!");
+
+
+
+// ✅ Save DOB permanently
+await setDoc(
+  doc(db, "playerBirthdays", normalizedMobile),
+  {
+    name: nameInput.value.trim(),
+    mobile: mobileInput.value.trim(),
+    dob: dobInput.value,
+    updatedAt: Date.now()
+  }
+);
+
+/* 🔔 SEND NOTIFICATION TO DASHBOARD */
+
+await addDoc(collection(db,"notifications"), {
+  title: "🆕 New Player Registered",
+  body: nameInput.value.trim() + " has registered for <Season-5></Season-5> 🏏",
+  time: Date.now(),
+  type: "player_registration"   // ✅ IMPORTANT
+});
+
+
+  loader.style.display="none";
+  // alert("✅ Congratulations Your Registration Successfully Completed ");
+  // location.reload();
+
+
+  /*latest added for the success animation   */
+loader.style.display="none";
+
+// document.getElementById("successScreen").style.display="flex";
+
+
+const userName = nameInput.value.trim();
+
+// document.getElementById("successTitle").innerText =
+//   userName + ", Your Registration Successfully Completed 🎉";
+
+// document.getElementById("successSubText").innerText =
+//   "Welcome to JP Boy's Cricketer's Season-5";
+
+document.getElementById("successTitle").innerText =
+  userName + ", Your Registration Successfully Completed 🎉";
+
+document.getElementById("successSubText").innerText =
+  "Your Player ID : " + playerId + " | Welcome to VMC Cricketer's Season-1";
+
+document.getElementById("successScreen").style.display = "flex";
+
+
+setTimeout(()=>{
+  window.location.href="index.html";
+},8000);
+  
+
+
+
+
+
+
+
+}catch(err){
+
+  loader.style.display = "none";
+
+  console.error("Registration Error:", err);
+
+  if (err.message === "MOBILE_ALREADY_REGISTERED") {
+
+    alert(
+      "⚠️ This mobile number is already registered!\n\n" +
+      "One mobile number can register only once."
+    );
+
+    mobileInput.focus();
+    return;
+  }
+
+  // ===== DUPLICATE UTR ERROR =====
+
+if (err.message === "UTR_ALREADY_REGISTERED") {
+
+    utrError.textContent =
+      "This UTR number has already been used. Please enter a different UTR number.";
+
+    utrInput.focus();
+
+    return;
+}
+
+  alert("❌ Error: " + err.message);
+
+}
+
+}
+
+);
+</script>
+
+
+
+
+
+
+<!-- <div id="successScreen" style="
+  display:none;
+  position:fixed;
+  inset:0;
+  background:#0b1c2d;
+  color:#fff;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+  z-index:2000;
+  text-align:center;
+">
+
+  <div style="font-size:60px;animation:pop 0.6s ease;">✅</div>
+  <h2 style="margin-top:20px;">Congratulations YourRegistration Successfully Completed</h2>
+  <p>Welcome to JP Boy's Cricketer's Season-5 🎉</p>
+</div> -->
+
+
+<!-- <div id="successScreen" class="success-overlay">
+
+  <div class="success-box">
+
+    <img src="assets/images/Logo.png" class="success-logo">
+
+    <h2>Congratulations Your Registration Successfully Completed 🎉</h2>
+
+    <p>Welcome to JP Boy's Cricketer's Season-5</p>
+
+    <div class="success-check">✔</div>
+
+  </div>
+
+</div> -->
+
+
+<div id="successScreen" class="success-overlay">
+
+  <div class="success-box">
+
+    <img src="assets/images/Logo.png" class="success-logo">
+
+    <h2 id="successTitle">Registration Successful 🎉</h2>
+
+    <p id="successSubText">
+      Welcome to VMC Cricketer's Season-1
+    </p>
+
+    <div class="success-check">✔</div>
+
+  </div>
+
+</div>
+
+<script>
+// document.addEventListener("deviceready", async () => {
+
+//   const { PushNotifications } = Capacitor.Plugins;
+
+//   const perm = await PushNotifications.requestPermissions();
+
+//   if (perm.receive === 'granted') {
+//     await PushNotifications.register();
+//   }
+
+//   PushNotifications.addListener('registration', async (token) => {
+
+//     console.log("🔥 TOKEN:", token.value);
+
+//     try {
+//       await fetch("https://iid.googleapis.com/iid/v1/" + token.value + "/rel/topics/allUsers", {
+//         method: "POST",
+//         headers: {
+//           "Authorization": "key=YOUR_SERVER_KEY"
+//         }
+//       });
+
+//       console.log("✅ Subscribed to allUsers");
+
+//     } catch (e) {
+//       console.log("❌ Topic subscription failed (ignore for now)");
+//     }
+
+//   });
+
+//   PushNotifications.addListener('pushNotificationReceived', notification => {
+//     console.log("🔔 Notification:", notification);
+//   });
+
+// });
+
+
+// document.addEventListener("deviceready", async () => {
+
+//   const { PushNotifications } = Capacitor.Plugins;
+
+//   const perm = await PushNotifications.requestPermissions();
+
+//   if (perm.receive === 'granted') {
+//     await PushNotifications.register();
+//   }
+
+//   PushNotifications.addListener('registration', async (token) => {
+
+//     console.log("🔥 TOKEN:", token.value);
+
+//     // ✅ Save token
+//     localStorage.setItem("fcmToken", token.value);
+
+//     console.log("✅ Token saved successfully");
+
+//   });
+
+//   PushNotifications.addListener('pushNotificationReceived', notification => {
+//     console.log("🔔 Notification:", notification);
+//   });
+
+// });
+
+
+
+
+
+window.addEventListener("load", async () => {
+
+  console.log("🔥 Push init started");
+
+  if (!window.Capacitor) {
+    console.log("❌ Not app environment");
+    return;
+  }
+
+  const { PushNotifications } = Capacitor.Plugins;
+
+  const perm = await PushNotifications.requestPermissions();
+
+  if (perm.receive !== 'granted') {
+    alert("Enable notifications bro");
+    return;
+  }
+
+  await PushNotifications.register();
+
+  PushNotifications.addListener('registration', async (token) => {
+
+    console.log("🔥 TOKEN:", token.value);
+
+    try {
+      await setDoc(doc(db, "fcmTokens", token.value), {
+        token: token.value,
+        createdAt: Date.now()
+      });
+
+      console.log("✅ Token saved");
+
+    } catch (e) {
+      console.log("❌ Save failed", e);
+    }
+
+  });
+
+});
+
+</script>
+
+
+
+
+
+
+<!-- <script>
+function payUPI(){
+
+  const upiId = "8197901199@ybl";
+  const name = "JP Boys Cricket";
+  const amount = "800";
+  const note = "Registration Fee";
+
+  const upiLink = `upi://pay?pa=${upiId}&pn=${encodeURIComponent(name)}&am=${amount}&cu=INR&tn=${encodeURIComponent(note)}`;
+
+  // 🔥 Open UPI app
+  window.location.href = upiLink;
+
+  // ⚠️ fallback if not opened
+  setTimeout(()=>{
+    alert("If payment app not opened, please use QR code.");
+  },2000);
+}
+</script> -->
+
+
+<!-- <script>
+const upiId = "8197901199@ybl";
+const name = "JP Boys Cricket";
+const amount = "800";
+const note = "Registration Fee";
+
+// 🔥 PhonePe
+function payPhonePe(){
+
+  const link = `upi://pay?pa=${upiId}&pn=${encodeURIComponent(name)}&am=${amount}&cu=INR&tn=${encodeURIComponent(note)}`;
+
+  window.location.href = link;
+
+  setTimeout(()=>{
+    alert("If PhonePe not opened, please use QR code.");
+  },20000);
+}
+
+// 🔥 Google Pay
+function payGPay(){
+
+  const link = `upi://pay?pa=${upiId}&pn=${encodeURIComponent(name)}&am=${amount}&cu=INR&tn=${encodeURIComponent(note)}`;
+
+  window.location.href = link;
+
+  setTimeout(()=>{
+    alert("If Google Pay not opened, please use QR code.");
+  },20000);
+}
+</script> -->
+
+
+<script>
+const upiId = "8197901199@ybl";
+const name = "JP Boys Cricket";
+const amount = "800";
+const note = "Registration Fee";
+
+// 🔥 Common UPI link
+function getUPILink(){
+  return `upi://pay?pa=${upiId}&pn=${encodeURIComponent(name)}&am=${amount}&cu=INR&tn=${encodeURIComponent(note)}`;
+}
+
+// 🔥 PhonePe
+function payPhonePe(){
+  openUPI();
+}
+
+// 🔥 Google Pay
+function payGPay(){
+  openUPI();
+}
+
+// 🔥 Open UPI app
+function openUPI(){
+  window.location.href = getUPILink();
+
+  // mark that user went to payment app
+  localStorage.setItem("upi_redirect", "true");
+}
+
+// ✅ Smart return detection (ONLY when user comes back)
+document.addEventListener("visibilitychange", () => {
+
+  if(document.visibilityState === "visible"){
+
+    const redirected = localStorage.getItem("upi_redirect");
+
+    if(redirected === "true"){
+
+      // clear flag
+      localStorage.removeItem("upi_redirect");
+
+      // show message AFTER returning (not during payment)
+      setTimeout(()=>{
+        alert("If you have completed the payment, please upload receipt. If not, use UPI ID or QR code.");
+      }, 5000);
+    }
+  }
+
+});
+</script>
+
+
+</body>
+</html>
+
+
+

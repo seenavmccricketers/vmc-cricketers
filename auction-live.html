@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>VMC Cricketer's</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+<style>
+html, body{
+  height:100%;
+}
+
+body{
+  margin:0;
+  background:#081a2b;
+  color:#fff;
+  font-family:Segoe UI,sans-serif;
+
+  /* ✅ FIX FOR FOOTER */
+  display:flex;
+  flex-direction:column;
+  min-height:100vh;
+}
+
+/* CONTENT WRAPPER FIX */
+#teams{
+  flex:1;
+}
+
+/* HEADER */
+header{
+  background:#123c6b;
+  padding:12px 16px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.dashboard-btn{
+  background:#ffeb3b;
+  color:#000;
+  padding:6px 14px;
+  border-radius:20px;
+  font-weight:bold;
+  text-decoration:none;
+}
+
+/* LATEST SOLD (BIG) */
+#latestSold{
+  margin:20px;
+  padding:20px;
+  border-radius:18px;
+  background:#1fa463;
+  text-align:center;
+  animation:pop .6s ease;
+}
+
+#latestSold img{
+  width:150px;
+  height:150px;
+  border-radius:50%;
+  object-fit:cover;
+  background:#fff;
+}
+
+@keyframes pop{
+  from{transform:scale(.8);opacity:0}
+  to{transform:scale(1);opacity:1}
+}
+
+/* PREVIOUS SOLD (SMALL) */
+/* #soldHistory{
+  display:flex;
+  gap:10px;
+  padding:10px;
+  overflow-x:auto;
+} */
+
+#soldHistory{
+  display:flex;
+  gap:10px;
+  padding:10px;
+  overflow-x:auto;
+
+  /* 🔥 MAIN FIX */
+  min-height:120px;   /* ensures players are visible */
+
+  padding-bottom:20px;
+  scrollbar-width: thin;
+
+   flex-shrink:0;
+}
+
+/* ✅ Chrome scrollbar styling */
+#soldHistory::-webkit-scrollbar{
+  height:6px;
+}
+
+#soldHistory::-webkit-scrollbar-track{
+  background: transparent;
+}
+
+#soldHistory::-webkit-scrollbar-thumb{
+  background:#888;
+  border-radius:10px;
+}
+
+.small-player{
+  min-width:160px;
+  background:#0f2e4d;
+  border-radius:12px;
+  padding:10px;
+  text-align:center;
+  animation:slideIn .5s ease;
+   flex-shrink:0;
+}
+
+.small-player img{
+  width:60px;
+  height:60px;
+  border-radius:50%;
+  object-fit:cover;
+  background:#fff;
+}
+
+@keyframes slideIn{
+  from{opacity:0;transform:translateX(30px)}
+  to{opacity:1;transform:translateX(0)}
+}
+
+/* TEAMS */
+.team{
+  background:#0f2e4d;
+  margin:10px;
+  padding:12px;
+  border-radius:12px;
+}
+
+.team-top{
+  display:flex;
+  gap:8px;
+  align-items:center;
+}
+
+.team-top img{
+  width:32px;
+  height:32px;
+  border-radius:6px;
+}
+
+button{
+  background:#ffd700;
+  border:none;
+  padding:6px 12px;
+  border-radius:6px;
+  font-weight:bold;
+  cursor:pointer;
+  margin-top:6px;
+}
+
+/* ✅ FOOTER FIX */
+footer{
+  background:#123c6b;
+  text-align:center;
+  padding:12px;
+  margin-top:auto; /* pushes footer to bottom */
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h2>🏏 VMC Cricketer's – Live Auction</h2>
+  <a href="index.html" class="dashboard-btn">Dashboard</a>
+</header>
+
+<h3 style="text-align:center">🔥 Latest Sold Player</h3>
+<div id="latestSold">Waiting for sale...</div>
+
+<h4 style="text-align:center">Previous Sold</h4>
+<div id="soldHistory"></div>
+
+<h3 style="text-align:center">Teams</h3>
+<div id="teams"></div>
+
+<footer>🏏 VMC Cricketer's © 2026 | Developed By KBU Software Pvt Ltd.</footer>
+
+<audio id="soldSound">
+  <source src="https://assets.mixkit.co/active_storage/sfx/2019/2019-preview.mp3">
+</audio>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
+// import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
+
+import { 
+  getFirestore, 
+  collection, 
+  onSnapshot,
+  getDocs,
+  updateDoc,
+  doc
+} from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
+
+/*Reducing the image size */
+
+function optimizeImage(url){
+  if(!url) return "";
+  if(!url.includes("res.cloudinary.com")) return url;
+  return url.replace("/upload/","/upload/q_auto,f_auto/");
+}
+
+
+/* 🔊 LIVE SOLD VOICE ANNOUNCEMENT */
+
+function speak(text){
+  if(!('speechSynthesis' in window)) return;
+
+  const speech = new SpeechSynthesisUtterance(text);
+  speech.lang = "en-IN";
+  speech.rate = 0.9;
+  speech.pitch = 1;
+
+  window.speechSynthesis.cancel();
+  window.speechSynthesis.speak(speech);
+}
+
+function announceLiveSale(player){
+  const amount = Number(player.soldAmount || 0).toLocaleString("en-IN");
+  const message =
+    player.name + " sold to " +
+    player.soldTeam + " for " +
+    amount + " rupees";
+
+  speak(message);
+}
+
+
+
+
+// import {
+//   getFirestore,
+//   collection,
+//   onSnapshot,
+//   getDocs,
+//   deleteDoc,
+//   doc
+// } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
+
+
+const firebaseConfig = {
+ 
+  apiKey: "AIzaSyBIY7j6h-3BcauIWe7hPp6Z4EpZ4vIAGlI",
+
+  authDomain: "vmccricketers.firebaseapp.com",
+
+   projectId: "vmccricketers",
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+const isAdmin = localStorage.getItem("isAdmin") === "true";
+
+
+const latestDiv = document.getElementById("latestSold");
+const historyDiv = document.getElementById("soldHistory");
+const teamsDiv = document.getElementById("teams");
+const sound = document.getElementById("soldSound");
+
+let shown = new Set();
+let soldPlayers = [];
+const PLAYER_LIMIT = 11;
+
+const TEAMS = [
+  {name:"VMC 1 ",logo:"https://res.cloudinary.com/dwvem4ixh/image/upload/v1794394652/WhatsApp_Image_2026-11-11_at_8.15.26_AM_urelvt.jpg"},
+  {name:"VMC 2",logo:"https://res.cloudinary.com/dwvem4ixh/image/upload/v1794394652/WhatsApp_Image_2026-11-11_at_7.03.01_AM_u48xbr.jpg"},
+  {name:"VMC 3",logo:"https://res.cloudinary.com/dwvem4ixh/image/upload/v1770640193/Shadow_Strikers_xlky53.jpg"},
+  {name:"VMC 4",logo:"https://res.cloudinary.com/dwvem4ixh/image/upload/v1794394653/WhatsApp_Image_2026-11-11_at_2.25.18_PM_vbuirt.jpg"},
+  {name:"VMC 5",logo:"https://res.cloudinary.com/dwvem4ixh/image/upload/v1794394652/WhatsApp_Image_2026-11-10_at_11.33.54_PM_ileuhw.jpg"},
+  {name:"VMC 6",logo:"https://res.cloudinary.com/dwvem4ixh/image/upload/v1794394653/WhatsApp_Image_2026-11-11_at_2.27.18_PM_k32dmh.jpg"},
+  {name:"VMC 7",logo:"https://res.cloudinary.com/dwvem4ixh/image/upload/v1794394653/WhatsApp_Image_2026-11-11_at_2.27.18_PM_k32dmh.jpg"},
+  {name:"VMC 8",logo:"https://res.cloudinary.com/dwvem4ixh/image/upload/v1794394653/WhatsApp_Image_2026-11-11_at_2.27.18_PM_k32dmh.jpg"},
+  {name:"VMC 9",logo:"https://res.cloudinary.com/dwvem4ixh/image/upload/v1794394653/WhatsApp_Image_2026-11-11_at_2.27.18_PM_k32dmh.jpg"},
+  {name:"VMC 10",logo:"https://res.cloudinary.com/dwvem4ixh/image/upload/v1794394653/WhatsApp_Image_2026-11-11_at_2.27.18_PM_k32dmh.jpg"}
+];
+
+onSnapshot(collection(db,"players"), snap => {
+
+  soldPlayers = snap.docs
+    .map(d=>({id:d.id,...d.data()}))
+    .filter(p=>p.sold)
+    .sort((a,b)=>(b.soldAt||0)-(a.soldAt||0));
+
+  if(!soldPlayers.length) return;
+
+  const latest = soldPlayers[0];
+
+  /* BIG CARD */
+  latestDiv.innerHTML = `
+   <img loading="lazy" src="${optimizeImage(latest.photo)}">
+
+    <h2>${latest.name}</h2>
+    <p>${latest.role}</p>
+    <p>Sold to <b>${latest.soldTeam}</b></p>
+    <h2>₹${latest.soldAmount}</h2>
+  `;
+
+  if(!shown.has(latest.id)){
+    shown.add(latest.id);
+    sound.currentTime=0;
+    sound.play().catch(()=>{});
+    confetti({particleCount:200,spread:100,origin:{y:.6}});
+
+// 🔊 NEW VOICE ANNOUNCEMENT
+  announceLiveSale(latest);
+
+  }
+
+  /* SMALL HISTORY */
+  historyDiv.innerHTML="";
+  soldPlayers.slice(1,11).forEach(p=>{
+    historyDiv.innerHTML+=`
+      <div class="small-player">
+        <img loading="lazy" src="${optimizeImage(p.photo)}">
+
+        <b>${p.name}</b><br>
+        ₹${p.soldAmount}
+      </div>
+    `;
+  });
+
+
+
+
+
+  renderTeams();
+});
+
+/* TEAMS */
+function renderTeams(){
+  teamsDiv.innerHTML="";
+  TEAMS.forEach(t=>{
+    const list=soldPlayers.filter(p=>p.soldTeam===t.name);
+    teamsDiv.innerHTML+=`
+      <div class="team">
+        <div class="team-top">
+          <img loading="lazy" src="${optimizeImage(t.logo)}">
+
+       <b style="color:${list.length >= PLAYER_LIMIT ? '#ff4d4d' : '#fff'}">
+  ${t.name} (${list.length}/${PLAYER_LIMIT})
+</b>
+        </div>
+        ${
+          list.length
+          ? `<ul>
+  ${list.map(p=>`
+    <li>
+      ${p.name} - ₹${p.soldAmount}
+
+      ${
+        isAdmin
+        ? `
+          <select 
+            style="margin-left:8px;padding:4px;border-radius:6px;"
+            onchange="movePlayer('${p.id}', this.value)"
+          >
+            <option value="">Move</option>
+            ${TEAMS.map(t => `
+              <option value="${t.name}">${t.name}</option>
+            `).join("")}
+          </select>
+        `
+        : ""
+      }
+
+    </li>
+  `).join("")}
+</ul>
+             <button onclick="downloadPDF('${t.name.replace(/'/g,"")}')">Download PDF</button>`
+          : `<p>No players yet</p>`
+        }
+      </div>
+    `;
+  });
+}
+
+/* PDF */
+
+
+// window.downloadPDF=(team)=>{
+//   const list=soldPlayers.filter(p=>p.soldTeam.replace(/'/g,"")===team);
+//   const {jsPDF}=window.jspdf;
+//   const pdf=new jsPDF();
+//   let y=10;
+//   pdf.text(team,10,y); y+=10;
+//   list.forEach(p=>{
+//     pdf.text(`${p.name} - ₹${p.soldAmount}`,10,y);
+//     y+=10;
+//   });
+//   pdf.save(team+".pdf");
+// };
+
+
+function loadImageAsBase64(url) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.crossOrigin = "anonymous"; // IMPORTANT for Cloudinary
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      canvas.width = img.width;
+      canvas.height = img.height;
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(img, 0, 0);
+      resolve(canvas.toDataURL("image/jpeg"));
+    };
+    img.onerror = reject;
+   img.src = optimizeImage(url);
+
+  });
+}
+
+
+
+
+
+// import {
+//   collection,
+//   getDocs,
+//   query,
+//   where,
+//   deleteDoc,
+//   doc
+// } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+// async function deleteAllSoldPlayers() {
+//   try {
+//     const q = query(collection(db, "players"), where("status", "==", "sold"));
+//     const snapshot = await getDocs(q);
+
+//     const deletions = [];
+//     snapshot.forEach((player) => {
+//       deletions.push(deleteDoc(doc(db, "players", player.id)));
+//     });
+
+//     await Promise.all(deletions);
+
+//     alert("All sold players deleted successfully ✅");
+//   } catch (err) {
+//     console.error(err);
+//     alert("Error deleting sold players ❌");
+//   }
+// }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*   Downloading the team PDF files    */
+
+
+window.downloadPDF = async (team) => {
+
+  const list = soldPlayers.filter(
+    p => p.soldTeam.replace(/'/g,"") === team
+  );
+
+  if (!list.length) {
+    alert("No players in this team");
+    return;
+  }
+
+  const { jsPDF } = window.jspdf;
+  const pdf = new jsPDF();
+
+  let y = 10;
+  pdf.setFontSize(16);
+  pdf.text(team, 10, y);
+  y += 10;
+
+  for (const p of list) {
+    try {
+      const imgData = await loadImageAsBase64(p.photo);
+
+      pdf.addImage(imgData, "JPEG", 10, y, 25, 25);
+      pdf.setFontSize(12);
+      pdf.text(`Name: ${p.name}`, 40, y + 8);
+      pdf.text(`Amount: ₹${p.soldAmount}`, 40, y + 16);
+
+      y += 35;
+
+      if (y > 260) {
+        pdf.addPage();
+        y = 10;
+      }
+    } catch (e) {
+      console.error("Image load failed", e);
+    }
+  }
+
+  // pdf.save(team + ".pdf");
+
+  const blob = pdf.output("blob");
+const url = URL.createObjectURL(blob);
+
+// 🔍 Detect mobile WebView
+const isMobile = /Android|iPhone|iPad/i.test(navigator.userAgent);
+
+if (isMobile) {
+  // 📱 Mobile → open PDF (user can download/share)
+  window.open(url, "_blank");
+} else {
+  // 💻 Desktop → direct download
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = team + ".pdf";
+  a.click();
+}
+
+setTimeout(() => URL.revokeObjectURL(url), 3000);
+};
+
+
+
+
+
+
+
+
+// /* ========= CLEAR SOLD PLAYERS (SAFE ADDON) ========= */
+
+// async function clearSoldPlayers() {
+//   try {
+
+//     const snap = await getDocs(collection(db, "players"));
+
+//     const deletions = [];
+
+//     snap.forEach(d => {
+//       const data = d.data();
+
+//       // Only delete sold players (same logic your page uses)
+//       if (data.sold === true) {
+//         deletions.push(deleteDoc(doc(db, "players", d.id)));
+//       }
+//     });
+
+//     await Promise.all(deletions);
+
+//     // Reset UI immediately
+//     latestDiv.innerHTML = "Waiting for sale...";
+//     historyDiv.innerHTML = "";
+//     teamsDiv.innerHTML = "";
+
+//     shown.clear();
+//     soldPlayers = [];
+
+//     alert("All sold players cleared ✅");
+
+//   } catch (e) {
+//     console.error(e);
+//     alert("Failed clearing sold players ❌");
+//   }
+// }
+
+// // expose to button/admin call
+// window.clearSoldPlayers = clearSoldPlayers;
+
+
+
+
+
+
+
+
+
+
+
+
+window.movePlayer = async function(playerId, newTeam){
+
+  if(!newTeam) return;
+
+  if(localStorage.getItem("isAdmin") !== "true"){
+    alert("Not authorized ❌");
+    return;
+  }
+
+  try{
+
+    const PLAYER_LIMIT = 11;
+
+    const snap = await getDocs(collection(db,"players"));
+
+    let count = 0;
+
+    snap.forEach(d=>{
+      const data = d.data();
+      if(data.sold && data.soldTeam === newTeam){
+        count++;
+      }
+    });
+
+    if(count >= PLAYER_LIMIT){
+      alert("❌ Team already full");
+      return;
+    }
+
+    await updateDoc(doc(db,"players", playerId),{
+      soldTeam:newTeam
+    });
+
+    alert("✅ Player moved successfully");
+
+  }catch(e){
+    console.error(e);
+    alert("❌ Move failed");
+  }
+};
+
+
+</script>
+
+</body>
+</html>

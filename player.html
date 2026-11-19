@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VMC Cricketer's</title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Segoe UI,sans-serif}
+
+body{
+  background:#0b1c2d;
+  color:#fff;
+}
+
+/* Header */
+header{
+  background:linear-gradient(90deg,#1e3c72,#2a5298);
+  padding:14px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+header h2{font-size:18px}
+
+header a{
+  background:#ffd700;
+  padding:6px 14px;
+  border-radius:20px;
+  text-decoration:none;
+  color:#000;
+  font-weight:600;
+}
+
+/* Stats */
+#playerStats{
+  padding:16px;
+  text-align:center;
+}
+
+.stat-grid{
+  display:flex;
+  justify-content:center;
+  gap:12px;
+  flex-wrap:wrap;
+  margin-top:12px;
+}
+
+.stat-box{
+  background:#102840;
+  padding:14px;
+  border-radius:14px;
+  min-width:90px;
+}
+
+.stat-box b{
+  font-size:20px;
+  display:block;
+  margin-top:4px;
+}
+
+.download-btn{
+  margin-top:14px;
+  padding:10px 16px;
+  border:none;
+  border-radius:10px;
+  background:#ffd700;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+/* STATUS NOTE BOX */
+.status-note{
+  margin-top:16px;
+  background:#102840;
+  border-radius:12px;
+  padding:12px;
+  font-size:14px;
+  line-height:1.6;
+}
+
+.green{color:#28a745}
+.red{color:#dc3545}
+.yellow{color:#ffc107}
+
+/* Player Cards Layout */
+#players{
+  padding:16px;
+  display:grid;
+  grid-template-columns:1fr;
+  gap:14px;
+}
+
+@media(min-width:768px){
+  #players{grid-template-columns:repeat(2,1fr)}
+}
+
+/* BASE CARD */
+.player-card{
+  background:#102840;
+  border-radius:14px;
+  padding:14px;
+  display:flex;
+  gap:12px;
+  align-items:center;
+  transition:background 0.5s ease, box-shadow 0.5s ease;
+}
+
+.player-card img{
+  width:70px;
+  height:70px;
+  border-radius:50%;
+  object-fit:cover;
+  background:#fff;
+  transition:border 0.5s ease;
+}
+
+/* STATUS COLORS */
+.player-card.verified{
+  background:#123d2b;
+  box-shadow:0 0 10px #28a745;
+}
+.player-card.rejected{
+  background:#3d1212;
+  box-shadow:0 0 10px #dc3545;
+}
+.player-card.pending{
+  background:#3d3412;
+  box-shadow:0 0 10px #ffc107;
+}
+
+.player-card.verified img{ border:3px solid #28a745; }
+.player-card.rejected img{ border:3px solid #dc3545; }
+.player-card.pending img{ border:3px solid #ffc107; }
+
+/* ⭐ SMOOTH GLOW ANIMATION */
+@keyframes glowGreen{
+  0%{box-shadow:0 0 0px #28a745;}
+  50%{box-shadow:0 0 25px #28a745;}
+  100%{box-shadow:0 0 10px #28a745;}
+}
+@keyframes glowRed{
+  0%{box-shadow:0 0 0px #dc3545;}
+  50%{box-shadow:0 0 25px #dc3545;}
+  100%{box-shadow:0 0 10px #dc3545;}
+}
+@keyframes glowYellow{
+  0%{box-shadow:0 0 0px #ffc107;}
+  50%{box-shadow:0 0 25px #ffc107;}
+  100%{box-shadow:0 0 10px #ffc107;}
+}
+
+.glow-verified{animation:glowGreen 1s ease;}
+.glow-rejected{animation:glowRed 1s ease;}
+.glow-pending{animation:glowYellow 1s ease;}
+
+.player-info p{
+  font-size:14px;
+  margin-top:2px;
+}
+
+/* Footer */
+footer{
+  position:fixed;
+  bottom:0;
+  left:0;
+  width:100%;
+  background:linear-gradient(90deg,#1e3c72,#2a5298);
+  text-align:center;
+  padding:10px;
+  font-size:14px;
+  z-index:1000;
+}
+
+#players{
+  padding-bottom:70px;
+}
+
+
+
+
+/* PAGINATION */
+#pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 15px;
+  padding-bottom: 85px;
+}
+
+#pagination button {
+  padding: 9px 16px;
+  border: none;
+  border-radius: 8px;
+  background: #ffd700;
+  color: #000;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+#pagination button:disabled {
+  background: #526273;
+  color: #ccc;
+  cursor: not-allowed;
+}
+
+#pageInfo {
+  font-size: 14px;
+  color: #fff;
+  font-weight: 600;
+}
+
+
+
+/* JP BOYS PLAYER LOADER */
+
+.player-loader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 220px;
+  gap: 16px;
+}
+
+.loader-ring {
+  width: 55px;
+  height: 55px;
+  border: 5px solid #263c50;
+  border-top: 5px solid #ffd700;
+  border-radius: 50%;
+  animation: playerSpin 0.8s linear infinite;
+  box-shadow: 0 0 15px rgba(255,215,0,0.2);
+}
+
+.loader-text {
+  color: #ffd700;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  animation: loaderPulse 1.2s ease-in-out infinite;
+}
+
+@keyframes playerSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes loaderPulse {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+
+/* CENTER LOADER ACROSS FULL PLAYER SECTION */
+
+#players:has(.player-loader) {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  min-height: 250px;
+}
+
+.player-loader {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+
+</style>
+
+</head>
+
+<body>
+
+<header>
+  <h2>🏏 Registered Players</h2>
+  <a href="index.html">Dashboard</a>
+</header>
+
+<section id="playerStats">
+  <h3>Player Statistics</h3>
+
+  <div class="stat-grid">
+    <div class="stat-box">Total<b id="totalCount">0</b></div>
+    <div class="stat-box">Batsman<b id="batCount">0</b></div>
+    <div class="stat-box">Bowler<b id="bowlCount">0</b></div>
+    <div class="stat-box">All-Rounder<b id="allCount">0</b></div>
+    <div class="stat-box">Wicket -Keeper Batsman<b id="wkbCount">0</b></div>
+  </div>
+
+  <button class="download-btn" onclick="downloadAllPlayersPDF()">
+    ⬇ Download All Players PDF
+  </button>
+
+  <div class="status-note">
+    <label>Player Verification Status : </label>
+    <div><span class="green">🟢 Green </span> → Verified ( Enrolled for Auction )</div>
+    <div><span class="red">🔴 Red</span> → Rejected ( Not Available for Auction )</div>
+    <div><span class="yellow">🟡 Yellow </span> → Pending ( Waiting for Action to take )</div>
+  </div>
+
+</section>
+
+<section id="players"></section>
+
+
+
+
+<div id="pagination">
+  <button id="prevBtn" onclick="changePlayerPage(-1)" disabled>
+    ← Previous
+  </button>
+
+  <span id="pageInfo">Page 1</span>
+
+  <button id="nextBtn" onclick="changePlayerPage(1)" disabled>
+    Next →
+  </button>
+
+  <button onclick="refreshPlayers()">
+    ↻ Refresh
+  </button>
+</div>
+
+
+
+<script type="module">
+
+// import { initializeApp } from
+// "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
+
+// function optimizeImage(url){
+//   if(!url) return "";
+//   if(!url.includes("res.cloudinary.com")) return url;
+//   return url.replace("/upload/","/upload/q_auto,f_auto/");
+// }
+
+
+// import {
+//   getFirestore,
+//   collection,
+//   onSnapshot
+// } from
+// "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
+
+// const firebaseConfig = {
+//   apiKey: "AIzaSyBdlkwG56G7QJSWR9SI2e1LarOUxWg8lW4",
+//   authDomain: "jp-boys.firebaseapp.com",
+//   projectId: "jp-boys",
+//   storageBucket: "jp-boys.firebasestorage.app",
+//   messagingSenderId: "1015271887162",
+//   appId: "1:1015271887162:web:35dbd2b95f3df3f3908003"
+// };
+
+// const app = initializeApp(firebaseConfig);
+// const db = getFirestore(app);
+
+// const playersDiv = document.getElementById("players");
+// let players = [];
+// let previousStatus = {};
+
+// onSnapshot(collection(db,"players"), snap=>{
+//   players = [];
+//   snap.forEach(d=>{
+//     players.push(d.data());
+//   });
+//   updateCounts();
+//   renderPlayers();
+// });
+
+// function updateCounts(){
+//   totalCount.textContent = players.length;
+//   batCount.textContent = players.filter(p=>p.role==="Batsman").length;
+//   bowlCount.textContent = players.filter(p=>p.role==="Bowler").length;
+//   allCount.textContent = players.filter(p=>p.role==="All-Rounder").length;
+//    wkbCount.textContent = players.filter(p=>p.role==="Wicket -Keeper Batsman").length;
+// }
+
+// function renderPlayers(){
+//   playersDiv.innerHTML="";
+
+//   players.forEach(p=>{
+//     const status = p.verified || "pending";
+
+//     const card=document.createElement("div");
+//     card.className=`player-card ${status}`;
+
+//     /* Detect status change -> add glow */
+//     if(previousStatus[p.mobile] && previousStatus[p.mobile]!==status){
+//       card.classList.add(`glow-${status}`);
+//     }
+//     previousStatus[p.mobile]=status;
+
+//     card.innerHTML=`
+//         <img loading="lazy" src="${optimizeImage(p.photo)}">
+
+//         <div class="player-info">
+//           <b>${p.name}</b>
+//           <p>📞 ${p.mobile}</p>
+//           <p>Role: ${p.role}</p>
+//         </div>
+//     `;
+
+//     playersDiv.appendChild(card);
+//   });
+// }
+
+// /* PDF (unchanged) */
+// window.downloadAllPlayersPDF = async () => {
+//   const { jsPDF } = window.jspdf;
+//   const pdf = new jsPDF();
+
+//   let y = 10;
+//   pdf.setFontSize(16);
+//   pdf.text("Registered Players", 10, y);
+//   y += 10;
+
+//   for(const p of players){
+//     if(y > 260){
+//       pdf.addPage();
+//       y = 10;
+//     }
+
+//     const img = await loadImage(p.photo);
+
+//     pdf.addImage(img,"JPEG",10,y,25,25);
+//     pdf.setFontSize(11);
+//     pdf.text(`Name: ${p.name}`,40,y+6);
+//     pdf.text(`Mobile: ${p.mobile}`,40,y+12);
+//     pdf.text(`Role: ${p.role}`,40,y+18);
+
+//     y += 34;
+//   }
+
+//   pdf.save("All_Registered_Players.pdf");
+// };
+
+// function loadImage(url){
+//   return new Promise(resolve=>{
+//     const img = new Image();
+//     img.crossOrigin="anonymous";
+//     img.onload=()=>{
+//       const c=document.createElement("canvas");
+//       c.width=img.width;
+//       c.height=img.height;
+//       c.getContext("2d").drawImage(img,0,0);
+//       resolve(c.toDataURL("image/jpeg"));
+//     };
+//     img.src=optimizeImage(url);
+
+//   });
+// }
+
+
+
+import { initializeApp } from
+"https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
+
+import {
+  getFirestore,
+  collection,
+  getDocs,
+  query,
+  orderBy,
+  documentId,
+  startAfter,
+  limit,
+  getCountFromServer,
+  where
+} from
+"https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
+
+
+const firebaseConfig = {
+ apiKey: "AIzaSyBIY7j6h-3BcauIWe7hPp6Z4EpZ4vIAGlI",
+
+  authDomain: "vmccricketers.firebaseapp.com",
+
+  projectId: "vmccricketers",
+
+  storageBucket: "vmccricketers.firebasestorage.app",
+
+  messagingSenderId: "241813165395",
+
+  appId: "1:241813165395:web:ffd84d7209529fd272bda6"
+
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+
+// PAGINATION SETTINGS
+const PAGE_SIZE = 20;
+
+let players = [];
+let pageIndex = 0;
+let pageCursors = [null];
+let hasNextPage = false;
+
+
+// ELEMENTS
+const playersDiv = document.getElementById("players");
+const pageInfo = document.getElementById("pageInfo");
+const prevBtn = document.getElementById("prevBtn");
+const nextBtn = document.getElementById("nextBtn");
+
+
+// IMAGE OPTIMIZATION
+function optimizeImage(url) {
+  if (!url) return "";
+
+  if (!url.includes("res.cloudinary.com")) return url;
+
+  return url.replace("/upload/", "/upload/q_auto,f_auto/");
+}
+
+
+// UPDATE PLAYER STATISTICS
+async function updateCounts() {
+
+  try {
+
+    const playersRef = collection(db, "players");
+
+    const roles = [
+      "Batsman",
+      "Bowler",
+      "All-Rounder",
+      "Wicket -Keeper Batsman"
+    ];
+
+    const totalPromise = getCountFromServer(
+      query(playersRef)
+    );
+
+    const rolePromises = roles.map(role =>
+      getCountFromServer(
+        query(playersRef, where("role", "==", role))
+      )
+    );
+
+    const results = await Promise.all([
+      totalPromise,
+      ...rolePromises
+    ]);
+
+    document.getElementById("totalCount").textContent =
+      results[0].data().count;
+
+    document.getElementById("batCount").textContent =
+      results[1].data().count;
+
+    document.getElementById("bowlCount").textContent =
+      results[2].data().count;
+
+    document.getElementById("allCount").textContent =
+      results[3].data().count;
+
+    document.getElementById("wkbCount").textContent =
+      results[4].data().count;
+
+  } catch (error) {
+
+    console.error("Statistics error:", error);
+
+  }
+
+}
+
+
+// LOAD CURRENT PAGE
+async function loadPlayersPage() {
+
+ playersDiv.innerHTML = `
+  <div class="player-loader">
+    <div class="loader-ring"></div>
+    <div class="loader-text">LOADING PLAYERS...</div>
+  </div>
+`;
+
+  try {
+
+    const constraints = [
+      orderBy(documentId())
+    ];
+
+    const cursor = pageCursors[pageIndex];
+
+    if (cursor) {
+      constraints.push(startAfter(cursor));
+    }
+
+    constraints.push(limit(PAGE_SIZE + 1));
+
+    const q = query(
+      collection(db, "players"),
+      ...constraints
+    );
+
+    const snap = await getDocs(q);
+
+    // First 20 players only
+    const visibleDocs = snap.docs.slice(0, PAGE_SIZE);
+
+    players = visibleDocs.map(doc => doc.data());
+
+    hasNextPage = snap.docs.length > PAGE_SIZE;
+
+    // Save cursor for next page
+    if (visibleDocs.length > 0) {
+
+      pageCursors[pageIndex + 1] =
+        visibleDocs[visibleDocs.length - 1];
+
+    }
+
+    renderPlayers();
+
+    // Update navigation
+    pageInfo.textContent =
+      `Page ${pageIndex + 1}`;
+
+    prevBtn.disabled = pageIndex === 0;
+    nextBtn.disabled = !hasNextPage;
+
+  } catch (error) {
+
+    console.error("Player loading error:", error);
+
+    playersDiv.innerHTML =
+      "<p style='text-align:center;padding:20px;color:#ff6b6b'>Unable to load players. Please refresh.</p>";
+
+  }
+
+}
+
+
+// RENDER PLAYER CARDS
+function renderPlayers() {
+
+  playersDiv.innerHTML = "";
+
+  if (players.length === 0) {
+
+    playersDiv.innerHTML =
+      "<p style='text-align:center;padding:20px'>No players found.</p>";
+
+    return;
+  }
+
+  players.forEach(p => {
+
+    const status = ["verified", "rejected", "pending"]
+      .includes(p.verified) ? p.verified : "pending";
+
+    const card = document.createElement("div");
+
+    card.className = `player-card ${status}`;
+
+    // Player photo
+    if (p.photo) {
+
+      const img = document.createElement("img");
+
+      img.loading = "lazy";
+      img.src = optimizeImage(p.photo);
+      img.alt = p.name || "Player";
+
+      card.appendChild(img);
+
+    }
+
+    // Player details
+    const info = document.createElement("div");
+
+    info.className = "player-info";
+
+    const name = document.createElement("b");
+    name.textContent = p.name || "Unknown";
+
+    const mobile = document.createElement("p");
+    mobile.textContent = "📞 " + (p.mobile || "");
+
+    const role = document.createElement("p");
+    role.textContent = "Role: " + (p.role || "");
+
+    info.appendChild(name);
+    info.appendChild(mobile);
+    info.appendChild(role);
+
+    card.appendChild(info);
+
+    playersDiv.appendChild(card);
+
+  });
+
+}
+
+
+// PREVIOUS / NEXT PAGE
+window.changePlayerPage = async function(direction) {
+
+  const newPage = pageIndex + direction;
+
+  if (newPage < 0) return;
+
+  if (direction === 1 && !hasNextPage) return;
+
+  if (!pageCursors[newPage] && direction === 1) return;
+
+  pageIndex = newPage;
+
+  await loadPlayersPage();
+
+};
+
+
+// REFRESH
+window.refreshPlayers = async function() {
+
+  pageCursors = [null];
+  pageIndex = 0;
+
+  await updateCounts();
+  await loadPlayersPage();
+
+};
+
+
+// DOWNLOAD ALL PLAYERS PDF
+window.downloadAllPlayersPDF = async function() {
+
+  try {
+
+    const btn = document.querySelector(".download-btn");
+
+    btn.disabled = true;
+    btn.textContent = "Preparing PDF...";
+
+    // Fetch ALL players for PDF
+    const pdfSnap = await getDocs(
+      query(
+        collection(db, "players"),
+        orderBy(documentId())
+      )
+    );
+
+    const allPlayers = pdfSnap.docs.map(d => d.data());
+
+    const { jsPDF } = window.jspdf;
+
+    const pdf = new jsPDF();
+
+    let y = 10;
+
+    pdf.setFontSize(16);
+    pdf.text("Registered Players", 10, y);
+
+    y += 10;
+
+    for (const p of allPlayers) {
+
+      if (y > 260) {
+        pdf.addPage();
+        y = 10;
+      }
+
+      const img = p.photo
+        ? await loadImage(p.photo)
+        : null;
+
+      if (img) {
+        pdf.addImage(img, "JPEG", 10, y, 25, 25);
+      }
+
+      pdf.setFontSize(11);
+
+      pdf.text(`Name: ${p.name || ""}`, 40, y + 6);
+      pdf.text(`Mobile: ${p.mobile || ""}`, 40, y + 12);
+      pdf.text(`Role: ${p.role || ""}`, 40, y + 18);
+
+      y += 34;
+
+    }
+
+    pdf.save("All_Registered_Players.pdf");
+
+    btn.textContent = "⬇ Download All Players PDF";
+    btn.disabled = false;
+
+  } catch (error) {
+
+    console.error("PDF error:", error);
+
+    alert("Unable to generate PDF. Please try again.");
+
+    const btn = document.querySelector(".download-btn");
+    btn.textContent = "⬇ Download All Players PDF";
+    btn.disabled = false;
+
+  }
+
+};
+
+
+// LOAD PDF IMAGE
+function loadImage(url) {
+
+  return new Promise(resolve => {
+
+    const img = new Image();
+
+    img.crossOrigin = "anonymous";
+
+    img.onload = () => {
+
+      const c = document.createElement("canvas");
+
+      c.width = img.width;
+      c.height = img.height;
+
+      c.getContext("2d").drawImage(img, 0, 0);
+
+      resolve(c.toDataURL("image/jpeg"));
+
+    };
+
+    img.onerror = () => resolve(null);
+
+    img.src = optimizeImage(url);
+
+  });
+
+}
+
+
+// INITIAL LOAD
+updateCounts();
+loadPlayersPage();
+
+
+</script>
+
+<footer>
+🏏 VMC Cricketer's © 2026 | Developed By KBU Software Pvt Ltd.
+</footer>
+
+</body>
+</html>

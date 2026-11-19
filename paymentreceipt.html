@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Payment Receipts - Admin</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+body{
+  font-family:Arial;
+  background:#0b1c2d;
+  color:#fff;
+  padding:10px
+}
+h2{text-align:center}
+
+.card{
+  background:#123b5e;
+  padding:12px;
+  border-radius:10px;
+  margin-bottom:15px
+}
+img{
+  width:100%;
+  max-width:260px;
+  border-radius:8px;
+  margin-top:8px;
+  border:2px solid #ffd700
+}
+.admin-only{
+  background:#d9534f;
+  padding:20px;
+  border-radius:10px;
+  text-align:center;
+  font-weight:bold
+}
+</style>
+</head>
+
+<body>
+
+<h2>💳 Payment Receipts (Admin)</h2>
+<div id="receipts"></div>
+
+<script>
+/* ===== ADMIN CONTROL ===== */
+const isAdmin = true;   // 🔴 change to false for users
+
+if(!isAdmin){
+  document.body.innerHTML = `
+    <div class="admin-only">
+      ❌ Access Denied<br><br>
+      Admins only can view payment receipts
+    </div>`;
+}else{
+  loadReceipts();
+}
+
+function loadReceipts(){
+  const data = JSON.parse(localStorage.getItem("paymentReceipts")) || [];
+  const div = document.getElementById("receipts");
+
+  if(data.length === 0){
+    div.innerHTML = "<p>No receipts uploaded</p>";
+    return;
+  }
+
+  data.forEach(r=>{
+    div.innerHTML += `
+      <div class="card">
+        <b>Name:</b> ${r.name}<br>
+        <b>Mobile:</b> ${r.mobile}<br>
+        <b>Uploaded:</b> ${r.time}<br>
+        <img src="${r.receipt}">
+      </div>`;
+  });
+}
+</script>
+
+</body>
+</html>

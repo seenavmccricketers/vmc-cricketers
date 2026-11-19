@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VMC Cricketer's</title>
+
+<style>
+body{
+  margin:0;
+  font-family:Segoe UI;
+  background:#eef2f7;
+  padding-bottom:60px;
+  box-sizing:border-box;
+}
+
+header{
+background:linear-gradient(90deg,#1976d2,#512da8);
+color:#fff;padding:14px;
+display:flex;justify-content:space-between;
+align-items:center;font-weight:bold;
+position:relative;
+}
+
+header button{
+background:#ffcc00;border:none;
+padding:7px 14px;border-radius:20px;
+font-weight:600;cursor:pointer;
+}
+
+.container{
+max-width:1100px;margin:20px auto;padding:10px;
+display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+gap:16px;
+}
+
+.card{
+background:#fff;
+padding:18px;
+border-radius:14px;
+box-shadow:0 6px 16px rgba(0,0,0,.15);
+text-align:center;
+}
+
+.card img{
+width:120px;
+height:120px;
+border-radius:50%;
+object-fit:cover;
+border:3px solid #ddd;
+margin-bottom:10px;
+}
+
+.name{font-weight:bold;font-size:18px;margin-top:6px;}
+.team{color:#666;margin-top:4px;}
+
+footer{
+  position:fixed;
+  bottom:0;
+  left:0;
+  width:100%;
+  height:60px;
+  background:linear-gradient(90deg,#1976d2,#512da8);
+  color:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:13px;
+  z-index:100;
+  box-sizing:border-box;
+}
+
+input{
+width:100%;
+padding:6px;
+margin-top:6px;
+border-radius:6px;
+border:1px solid #ccc;
+}
+
+button.save{
+margin-top:8px;
+width:100%;
+background:green;
+color:white;
+border:none;
+padding:8px;
+border-radius:8px;
+cursor:pointer;
+}
+
+/* PUBLIC ANNOUNCEMENT */
+.announcement{
+background:#ffeb3b;
+color:#000;
+font-weight:600;
+padding:8px 0;
+overflow:hidden;
+white-space:nowrap;
+}
+
+.announcement span{
+display:inline-block;
+padding-left:100%;
+animation:scrollText 12s linear infinite;
+}
+
+/* OWNER ANNOUNCEMENT */
+.ownerBar{
+background:#4caf50;
+color:#fff;
+display:none;
+}
+
+.ownerBar span{
+animation:scrollText 28s linear infinite;
+}
+
+@keyframes scrollText{
+0%{transform:translateX(0);}
+100%{transform:translateX(-100%);}
+}
+
+/* OWNER CODE POPUP */
+.popup{
+position:fixed;
+top:0;left:0;right:0;bottom:0;
+background:rgba(0,0,0,.6);
+display:flex;
+align-items:center;
+justify-content:center;
+z-index:999;
+}
+
+.popupBox{
+background:#fff;
+padding:20px;
+border-radius:12px;
+text-align:center;
+width:260px;
+}
+
+/* 🔔 NOTIFICATION */
+#notificationBell{
+font-size:22px;
+cursor:pointer;
+position:relative;
+}
+
+#notifCount{
+position:absolute;
+top:-6px;
+right:-10px;
+background:red;
+color:#fff;
+font-size:10px;
+padding:2px 6px;
+border-radius:50%;
+display:none;
+}
+
+#notificationBox{
+position:absolute;
+top:70px;
+right:10px;
+width:320px;
+max-height:400px;
+overflow-y:auto;
+background:#111;
+color:#fff;
+border-radius:12px;
+display:none;
+z-index:2000;
+box-shadow:0 0 12px rgba(0,0,0,0.6);
+padding:12px;
+}
+
+
+.viewBtn{
+margin-top:10px;
+background:linear-gradient(90deg,#ff512f,#dd2476);
+color:#fff;
+border:none;
+padding:10px;
+border-radius:10px;
+width:100%;
+cursor:pointer;
+font-weight:bold;
+transition:0.3s;
+}
+
+.viewBtn:hover{
+transform:scale(1.05);
+box-shadow:0 4px 12px rgba(0,0,0,0.3);
+}
+
+
+
+
+
+
+/* OWNERS LOADER */
+.owner-loader{
+  width:100%;
+  min-height:250px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  grid-column:1/-1;
+  gap:14px;
+}
+
+.owner-spinner{
+  width:48px;
+  height:48px;
+  border:5px solid #d6d6d6;
+  border-top:5px solid #d4a017;
+  border-radius:50%;
+  animation:ownerSpin 0.8s linear infinite;
+}
+
+.owner-loading-text{
+  color:#b8860b;
+  font-weight:bold;
+  letter-spacing:2px;
+  animation:ownerPulse 1.2s ease-in-out infinite;
+}
+
+@keyframes ownerSpin{
+  to{transform:rotate(360deg);}
+}
+
+@keyframes ownerPulse{
+  50%{opacity:0.4;}
+}
+
+
+</style>
+</head>
+
+<body>
+
+  
+<header>
+<button onclick="location.href='index.html'">Dashboard</button>
+<div>Team Owners</div>
+
+<div style="display:flex;align-items:center;gap:10px;position:relative;">
+<button onclick="openOwnerLogin()">Owner Login</button>
+
+<!-- 🔔 NEW -->
+<div id="notificationBell" onclick="toggleNotifications()">
+  🔔
+  <span id="notifCount">0</span>
+</div>
+</div>
+</header>
+
+<!-- 🔔 NEW -->
+<div id="notificationBox">
+  <h3>📢 Notifications</h3>
+  <div id="notifList">Loading...</div>
+</div>
+
+<!-- PUBLIC ANNOUNCEMENT -->
+<div class="announcement">
+<span>
+🏏 Welcome to VMC Cricketer's Tournament • Owner list updated live • Stay tuned for bidding..!
+</span>
+</div>
+
+<!-- OWNER ANNOUNCEMENT -->
+<div class="announcement ownerBar" id="ownerBar">
+<span>
+🔒 Owner Notice: Now it's time to Announce the Schudle . I wish each owner's will go through the schudle and informing to their teams. All the Best to Owner's
+</span>
+</div>
+
+<!-- OWNER CODE POPUP -->
+<div class="popup" id="codePopup" style="display:none;">
+<div class="popupBox">
+<div style="text-align:right;">
+  <span onclick="closePopup()" style="cursor:pointer;font-size:18px;font-weight:bold;">❌</span>
+</div>
+<div><b>Enter Owner Code</b></div>
+<input id="codeInput" placeholder="Owner Code">
+<button onclick="verifyCode()">Submit</button>
+</div>
+</div>
+
+<!-- <div class="container" id="cards"></div> -->
+
+<div class="container" id="cards">
+
+  <div class="owner-loader" id="ownerLoader">
+    <div class="owner-spinner"></div>
+    <div class="owner-loading-text">LOADING....</div>
+  </div>
+
+</div>
+
+<footer>
+🏏 VMC Cricketer's © 2026 | Developed By KBU Software Pvt Ltd.
+</footer>
+
+<script type="module">
+import { initializeApp } from
+"https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
+
+import {
+getFirestore,
+collection,
+doc,
+setDoc,
+onSnapshot,
+getDoc,
+getDocs,
+query,
+orderBy
+} from
+"https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
+
+const app=initializeApp({
+
+apiKey: "AIzaSyBIY7j6h-3BcauIWe7hPp6Z4EpZ4vIAGlI",
+
+  authDomain: "vmccricketers.firebaseapp.com",
+
+   projectId: "vmccricketers",
+   
+});
+
+
+
+const db=getFirestore(app);
+
+
+const ownersRef=collection(db,"owners");
+
+const playersRef = collection(db,"players");
+
+let soldPlayers = [];
+
+onSnapshot(playersRef, snap=>{
+  soldPlayers = snap.docs
+    .map(d=>d.data())
+    .filter(p=>p.sold);
+});
+
+document.addEventListener("click",(e)=>{
+  if(e.target.classList.contains("viewBtn")){
+    const team = e.target.getAttribute("data-team");
+    openTeam(team);
+  }
+});
+
+window.openTeam = function(teamName){
+
+  const list = soldPlayers
+    .filter(p=>p.soldTeam === teamName)
+    .sort((a,b)=>b.soldAmount - a.soldAmount);
+
+  document.getElementById("teamModal").style.display = "flex";
+  document.getElementById("modalTitle").innerText = teamName;
+  document.getElementById("modalCount").innerText =
+    `Players: ${list.length}`;
+
+  const ul = document.getElementById("modalList");
+  ul.innerHTML = "";
+
+  if(!list.length){
+    ul.innerHTML = "<li>No players yet</li>";
+    return;
+  }
+
+  list.forEach(p=>{
+    ul.innerHTML += `
+<li style="
+list-style:none;
+display:flex;
+align-items:center;
+gap:10px;
+margin-bottom:10px;
+background:#123c6b;
+padding:8px;
+border-radius:10px;
+">
+
+<img src="${p.photo}" style="
+width:40px;
+height:40px;
+border-radius:50%;
+object-fit:cover;
+background:#fff;
+">
+
+<div style="flex:1;">
+<div style="font-weight:bold;">${p.name}</div>
+<div style="font-size:13px;">₹${p.soldAmount}</div>
+</div>
+
+</li>`;
+  });
+
+};
+
+const isAdmin=localStorage.getItem("isAdmin")==="true";
+
+let editingEnabled=false;
+try{
+const s=await getDoc(doc(db,"settings","ownerControl"));
+if(s.exists()) editingEnabled=s.data().editingEnabled===true;
+}catch(e){}
+
+const canEdit=isAdmin && editingEnabled;
+
+/* ===== OWNER SESSION CONTROL ===== */
+
+const SESSION_LIMIT = 60 * 60 * 1000;
+
+function isOwnerSessionValid(){
+const verified = localStorage.getItem("ownerVerified")==="true";
+const loginTime = localStorage.getItem("ownerLoginTime");
+
+if(!verified || !loginTime) return false;
+
+const now = Date.now();
+return (now - parseInt(loginTime)) < SESSION_LIMIT;
+}
+
+if(isOwnerSessionValid()){
+  document.getElementById("ownerBar").style.display = "block";
+}else{
+  document.getElementById("ownerBar").style.display = "none"; // ✅ force hide
+}
+
+window.openOwnerLogin=()=>{
+document.getElementById("codePopup").style.display="flex";
+};
+
+window.verifyCode=async()=>{
+const entered=document.getElementById("codeInput").value.trim();
+
+const snap=await getDocs(ownersRef);
+
+let match=false;
+
+snap.forEach(d=>{
+if(d.data().ownerCode===entered){
+match=true;
+}
+});
+
+if(match){
+localStorage.setItem("ownerVerified","true");
+localStorage.setItem("ownerLoginTime",Date.now());
+location.reload();
+}else{
+alert("Invalid Owner Code");
+}
+};
+
+// /* RENDER */
+// const wrap=document.getElementById("cards");
+
+// onSnapshot(ownersRef,snap=>{
+// wrap.innerHTML="";
+
+
+/* RENDER OWNERS WITH LOADER */
+
+const wrap=document.getElementById("cards");
+
+let ownersFirstLoad=true;
+
+onSnapshot(ownersRef,snap=>{
+
+  wrap.innerHTML="";
+
+  snap.forEach(d=>{
+
+    const o=d.data();
+
+    wrap.innerHTML+=`
+      <div class="card">
+
+        <img src="${o.ownerImg||''}">
+
+        ${canEdit?`
+          <input id="n${d.id}" value="${o.ownerName||''}">
+          <input id="t${d.id}" value="${o.teamName||''}">
+          <button class="save" onclick="save('${d.id}')">Save</button>
+        `:`
+          <div class="name">${o.ownerName||''}</div>
+          <div class="team">${o.teamName||''}</div>
+
+          <button class="viewBtn" data-team="${o.teamName}">
+            View Team
+          </button>
+        `}
+
+      </div>
+    `;
+
+  });
+
+  ownersFirstLoad=false;
+
+},error=>{
+
+  console.error("Owners loading error:",error);
+
+  if(ownersFirstLoad){
+    wrap.innerHTML=`
+      <div class="owner-loader">
+        <div style="color:#d32f2f;font-weight:bold;">
+          Unable to load owners. Please refresh.
+        </div>
+      </div>
+    `;
+  }
+
+});
+
+snap.forEach(d=>{
+const o=d.data();
+
+wrap.innerHTML+=`
+<div class="card">
+
+
+
+
+<img src="${o.ownerImg||''}">
+
+${canEdit?`
+<input id="n${d.id}" value="${o.ownerName||''}">
+<input id="t${d.id}" value="${o.teamName||''}">
+<button class="save" onclick="save('${d.id}')">Save</button>
+`
+:
+`
+<div class="name">${o.ownerName||''}</div>
+<div class="team">${o.teamName||''}</div>
+
+<button class="viewBtn" data-team="${o.teamName}">
+View Team
+</button>
+`
+}
+
+</div>`;
+});
+
+
+
+/* SAVE */
+window.save=async(id)=>{
+await setDoc(doc(db,"owners",id),{
+ownerName:document.getElementById("n"+id).value,
+teamName:document.getElementById("t"+id).value
+},{merge:true});
+};
+
+/* 🔔 NOTIFICATIONS */
+const notifListEl=document.getElementById("notifList");
+const notifCountEl=document.getElementById("notifCount");
+
+let firstLoad=true;
+
+function playNotificationSound(){
+const audio=new Audio("https://actions.google.com/sounds/v1/alarms/notification_simple-01.mp3");
+audio.play().catch(()=>{});
+}
+
+try{
+const q=query(collection(db,"notifications"),orderBy("time","desc"));
+
+onSnapshot(q,(snap)=>{
+let html="";
+let unreadCount=0;
+
+const lastRead=Number(localStorage.getItem("owner_notif_read")||0);
+
+let hasNew=false;
+
+snap.forEach(doc=>{
+const d=doc.data()||{};
+
+ // ✅ ONLY PLAYER REGISTRATION
+  if(d.type !== "player_registration") return;
+
+const notifTime=d.time||0;
+
+if(notifTime>lastRead){
+unreadCount++;
+hasNew=true;
+}
+
+html+=`
+<div style="border-bottom:1px solid #333;padding:10px 0;">
+<div style="font-weight:600;">${d.title||"No Title"}</div>
+<div style="font-size:13px;opacity:0.8;">${d.body||""}</div>
+</div>
+`;
+});
+
+notifListEl.innerHTML=html||"<p>No notifications</p>";
+
+if(unreadCount>0){
+notifCountEl.style.display="block";
+notifCountEl.innerText=unreadCount;
+}else{
+notifCountEl.style.display="none";
+}
+
+if(!firstLoad && hasNew){
+playNotificationSound();
+}
+
+firstLoad=false;
+});
+}catch(e){
+console.log("Notification error",e);
+}
+
+</script>
+
+<script>
+
+
+/* ✅ CLOSE TEAM MODAL ON OUTSIDE CLICK */
+document.addEventListener("click",(e)=>{
+  const modal = document.getElementById("teamModal");
+  if(modal && e.target === modal){
+    closeTeam();
+  }
+});
+
+
+  window.closeTeam = function(){
+  document.getElementById("teamModal").style.display = "none";
+};
+
+
+window.toggleNotifications=function(){
+const box=document.getElementById("notificationBox");
+
+const isOpen=box.style.display==="block";
+box.style.display=isOpen?"none":"block";
+
+if(!isOpen){
+localStorage.setItem("owner_notif_read",Date.now());
+document.getElementById("notifCount").style.display="none";
+}
+};
+
+document.addEventListener("click",(e)=>{
+const box=document.getElementById("notificationBox");
+const bell=document.getElementById("notificationBell");
+
+if(bell && box && !bell.contains(e.target) && !box.contains(e.target)){
+box.style.display="none";
+}
+});
+
+window.closePopup = () => {
+document.getElementById("codePopup").style.display = "none";
+};
+
+document.getElementById("codePopup").addEventListener("click", (e) => {
+if (e.target.id === "codePopup") {
+closePopup();
+}
+});
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- ✅ TEAM VIEW MODAL -->
+<div id="teamModal" style="
+position:fixed;
+top:0;left:0;
+width:100%;height:100%;
+background:rgba(0,0,0,0.7);
+display:none;
+justify-content:center;
+align-items:center;
+z-index:3000;
+padding:10px;
+">
+
+  <div style="
+  background:#0f2e4d;
+  width:100%;
+  max-width:420px;
+  max-height:85%;
+  overflow:auto;
+  border-radius:14px;
+  padding:18px;
+  color:#fff;
+  ">
+
+    <h2 id="modalTitle"></h2>
+    <p id="modalCount"></p>
+    <ul id="modalList" style="padding:0;"></ul>
+
+    <button onclick="closeTeam()" style="
+    margin-top:12px;
+    width:100%;
+    background:red;
+    color:#fff;
+    border:none;
+    padding:10px;
+    border-radius:8px;
+    font-weight:bold;
+    ">
+    Close
+    </button>
+
+  </div>
+</div>
+
+
+</body>
+</html>

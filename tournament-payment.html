@@ -1,0 +1,1162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<title>Tournament Activation</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Segoe UI,sans-serif;
+}
+
+body{
+
+background:linear-gradient(135deg,#081b29,#0f2942);
+
+min-height:100vh;
+
+display:flex;
+
+justify-content:center;
+
+align-items:center;
+
+padding:30px;
+
+color:#fff;
+
+}
+
+.container{
+
+width:100%;
+
+max-width:900px;
+
+background:#102840;
+
+border-radius:25px;
+
+padding:35px;
+
+box-shadow:
+
+0 20px 50px rgba(0,0,0,.4);
+
+}
+
+.header{
+
+text-align:center;
+
+margin-bottom:30px;
+
+}
+
+.header h1{
+
+font-size:34px;
+
+color:#00d4ff;
+
+}
+
+.header p{
+
+margin-top:10px;
+
+color:#b9d3e6;
+
+}
+
+.grid{
+
+display:grid;
+
+grid-template-columns:1fr 1fr;
+
+gap:25px;
+
+}
+
+.card{
+
+background:linear-gradient(145deg,#123252,#0d2338);
+
+padding:22px;
+
+border-radius:18px;
+
+box-shadow:0 10px 25px rgba(0,0,0,.3);
+
+}
+
+.card h2{
+
+margin-bottom:20px;
+
+font-size:22px;
+
+color:#ffd700;
+
+}
+
+.row{
+
+margin-bottom:18px;
+
+}
+
+.label{
+
+font-size:13px;
+
+color:#9db4c9;
+
+margin-bottom:5px;
+
+}
+
+.value{
+
+font-size:17px;
+
+font-weight:bold;
+
+}
+
+.price{
+
+font-size:48px;
+
+color:#00ff9d;
+
+font-weight:bold;
+
+text-align:center;
+
+margin:25px 0;
+
+}
+
+.qr{
+
+width:220px;
+
+height:220px;
+
+margin:auto;
+
+background:#fff;
+
+border-radius:15px;
+
+display:flex;
+
+justify-content:center;
+
+align-items:center;
+
+overflow:hidden;
+
+}
+
+.qr img{
+
+width:100%;
+
+height:100%;
+
+object-fit:contain;
+
+}
+
+.upi{
+
+margin-top:20px;
+
+display:flex;
+
+gap:10px;
+
+}
+
+.upi input{
+
+flex:1;
+
+padding:12px;
+
+border:none;
+
+border-radius:10px;
+
+background:#173d61;
+
+color:white;
+
+}
+
+.copyBtn{
+
+background:#00bcd4;
+
+border:none;
+
+padding:12px 18px;
+
+border-radius:10px;
+
+cursor:pointer;
+
+font-weight:bold;
+
+}
+
+.copyBtn:hover{
+
+background:#0097a7;
+
+}
+
+input[type=text]{
+
+width:100%;
+
+padding:14px;
+
+border:none;
+
+border-radius:10px;
+
+margin-top:8px;
+
+background:#173d61;
+
+color:white;
+
+font-size:16px;
+
+}
+
+.submitBtn{
+
+margin-top:25px;
+
+width:100%;
+
+padding:16px;
+
+background:#2ecc71;
+
+border:none;
+
+border-radius:12px;
+
+font-size:18px;
+
+font-weight:bold;
+
+cursor:pointer;
+
+transition:.3s;
+
+}
+
+.submitBtn:hover{
+
+background:#27ae60;
+
+transform:translateY(-2px);
+
+}
+
+.note{
+
+margin-top:20px;
+
+background:#173d61;
+
+padding:15px;
+
+border-radius:12px;
+
+font-size:14px;
+
+line-height:24px;
+
+}
+
+.status{
+
+margin-top:20px;
+
+padding:15px;
+
+border-radius:12px;
+
+background:#0f2f4a;
+
+display:none;
+
+}
+
+@media(max-width:768px){
+
+.grid{
+
+grid-template-columns:1fr;
+
+}
+
+.header h1{
+
+font-size:28px;
+
+}
+
+}
+
+
+.backBtn{
+
+    background:#3498db;
+
+    color:#fff;
+
+    border:none;
+
+    padding:12px 22px;
+
+    border-radius:12px;
+
+    cursor:pointer;
+
+    font-size:15px;
+
+    font-weight:bold;
+
+    transition:.3s;
+
+}
+
+.backBtn:hover{
+
+    background:#1b6fa8;
+
+    transform:translateY(-3px);
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="header">
+
+    <button class="backBtn"
+        onclick="window.location.href='admin-dashboard.html'">
+
+        ← Back to Dashboard
+
+    </button>
+
+<h1>🏆 Tournament Activation</h1>
+
+<p>Activate your next tournament by completing the payment.</p>
+
+</div>
+
+<div class="grid">
+
+<!-- LEFT -->
+
+<div class="card">
+
+<h2>Organizer Details</h2>
+
+<div class="row">
+
+<div class="label">Organizer Name</div>
+
+<div class="value" id="organizerName">Loading...</div>
+
+</div>
+
+<div class="row">
+
+<div class="label">Email</div>
+
+<div class="value" id="organizerEmail">Loading...</div>
+
+</div>
+
+<div class="row">
+
+<div class="label">Tournament Activation Fee</div>
+
+<div class="price">₹50</div>
+
+</div>
+
+<div class="note">
+
+✅ One payment activates one tournament.<br>
+
+✅ Payment will be verified by Admin.<br>
+
+✅ Once approved you can create your next tournament.
+
+</div>
+
+</div>
+
+<!-- RIGHT -->
+
+<div class="card">
+
+<h2>Payment</h2>
+
+<div class="qr">
+
+<!-- Replace later -->
+
+<img src="assets/images/qr3.png" id="qrImage">
+
+</div>
+
+<div class="upi">
+
+<input
+
+id="upi"
+
+readonly
+
+value="8197901199@ybl">
+
+<button
+
+class="copyBtn"
+
+onclick="copyUPI()">
+
+Copy
+
+</button>
+
+</div>
+
+<div style="margin-top:25px;">
+
+<label>
+
+Transaction ID
+
+</label>
+
+<input
+
+type="text"
+
+id="transactionId"
+
+placeholder="Enter UPI Transaction ID">
+
+</div>
+
+<button
+
+class="submitBtn"
+
+id="submitPayment">
+
+Submit Payment
+
+</button>
+
+<div
+
+class="status"
+style="display:none;"
+id="paymentStatus">
+
+Waiting...
+
+</div>
+
+<!-- const statusBox =
+document.getElementById("paymentStatus");
+
+statusBox.style.display="block"; -->
+
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+document.getElementById("organizerName").innerHTML=
+
+localStorage.getItem("adminName") ||
+
+"Organizer";
+
+document.getElementById("organizerEmail").innerHTML=
+
+localStorage.getItem("adminEmail") ||
+
+"admin@example.com";
+
+function copyUPI(){
+
+const upi=document.getElementById("upi");
+
+upi.select();
+
+upi.setSelectionRange(0,99999);
+
+navigator.clipboard.writeText(upi.value);
+
+alert("UPI ID Copied");
+
+}
+
+// document.getElementById("submitPayment").onclick=function(){
+
+// alert("Part 2 will connect this button to Firebase.");
+
+// }
+
+
+</script>
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
+
+import {
+
+    getFirestore,
+
+    collection,
+
+    addDoc,
+
+    getDocs,
+
+    query,
+
+    where,
+
+    orderBy,
+
+    limit,
+
+    serverTimestamp,
+
+    onSnapshot
+
+} from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
+
+
+/* ==========================
+   FIREBASE
+========================== */
+
+const app = initializeApp({
+
+    apiKey: "AIzaSyBdlkwG56G7QJSWR9SI2e1LarOUxWg8lW4",
+
+    authDomain: "jp-boys.firebaseapp.com",
+
+    projectId: "jp-boys"
+
+});
+
+const db = getFirestore(app);
+
+
+/* ==========================
+   VARIABLES
+========================== */
+
+const email = localStorage.getItem("adminEmail");
+
+const name = localStorage.getItem("adminName");
+
+const statusBox = document.getElementById("paymentStatus");
+
+const submitBtn = document.getElementById("submitPayment");
+
+
+/* ==========================
+   CHECK EXISTING REQUEST
+========================== */
+
+// async function checkPendingPayment(){
+
+//     const q = query(
+
+//         collection(db,"paymentRequests"),
+
+//         where("organizerEmail","==",email),
+
+//         where("paymentStatus","==","pending"),
+
+//         orderBy("createdAt","desc"),
+
+//         limit(1)
+
+//     );
+
+//     const snap = await getDocs(q);
+
+//     if(!snap.empty){
+
+//         statusBox.style.display="block";
+
+//         statusBox.style.background="#f39c12";
+
+//         statusBox.innerHTML=
+
+//         "⏳ Your payment is waiting for Admin Approval.";
+
+//         submitBtn.disabled=true;
+
+//         submitBtn.style.opacity=".6";
+
+//         submitBtn.innerHTML="Pending Approval";
+
+//     }
+
+// }
+
+// checkPendingPayment();
+
+
+/* ==========================
+   SUBMIT PAYMENT
+========================== */
+
+submitBtn.onclick = async function(){
+
+    const txn =
+
+    document.getElementById("transactionId")
+
+    .value
+
+    .trim();
+
+    if(txn==""){
+
+        alert("Enter Transaction ID");
+
+        return;
+
+    }
+
+
+    /* CHECK DUPLICATE TXN */
+
+    const txnQuery = query(
+
+        collection(db,"paymentRequests"),
+
+        where("transactionId","==",txn)
+
+    );
+
+    const txnSnap = await getDocs(txnQuery);
+
+    if(!txnSnap.empty){
+
+        alert("Transaction ID already submitted.");
+
+        return;
+
+    }
+
+
+    /* CHECK IF USER ALREADY HAS PENDING */
+
+    const pendingQuery = query(
+
+        collection(db,"paymentRequests"),
+
+        where("organizerEmail","==",email),
+
+        // where("tournamentId","==",currentTournamentId),
+
+        where("paymentStatus","==","pending")
+
+    );
+
+    const pendingSnap = await getDocs(pendingQuery);
+
+    if(!pendingSnap.empty){
+
+        alert("You already have a Pending Request.");
+
+        return;
+
+    }
+
+
+    submitBtn.disabled=true;
+
+    submitBtn.innerHTML="Submitting...";
+
+
+    try{
+
+        await addDoc(
+
+            collection(db,"paymentRequests"),
+
+            {
+
+                organizerName:name,
+
+                organizerEmail:email,
+
+                currency:"INR",
+
+                amount:50,
+
+                transactionId:txn,
+
+                paymentStatus:"pending",
+
+                paymentMethod:"UPI",
+
+                seasonNumber:null,
+
+                tournamentName:name,
+
+                createdAt:Date.now(),
+
+                submittedAt:Date.now(),
+
+                createdServer:serverTimestamp()
+
+            }
+
+        );
+
+
+        statusBox.style.display="block";
+
+        // statusBox.style.background="#27ae60";
+
+        statusBox.style.background="#f39c12";
+
+        statusBox.innerHTML=
+
+        "✅ Payment Submitted Successfully.";
+
+
+        submitBtn.innerHTML="Submitted";
+
+        submitBtn.disabled=true;
+
+
+        document.getElementById("transactionId").value="";
+
+        setTimeout(() => {
+
+    window.location.href = "admin-dashboard.html";
+
+},5000);
+
+
+    }
+
+    catch(error){
+
+        console.error(error);
+
+        alert("Payment submission failed.");
+
+        submitBtn.disabled=false;
+
+        submitBtn.innerHTML="Submit Payment";
+
+    }
+
+};
+
+
+
+// const q = query(
+//     collection(db, "paymentRequests"),
+//     where("organizerEmail", "==", email),
+//     orderBy("createdAt", "desc"),
+//     limit(1)
+// );
+
+// onSnapshot(q, (snap) => {
+
+//     if (snap.empty) return;
+
+//     const payment = snap.docs[0].data();
+
+//     if (payment.paymentStatus === "approved") {
+
+//         document.getElementById("paymentStatusBox").innerHTML = `
+//             <div class="successBox">
+//                 ✅ Payment Approved Successfully.<br><br>
+//                 Your tournament has been activated.
+//             </div>
+//         `;
+
+//     }
+
+//     else if (payment.paymentStatus === "rejected") {
+
+//         document.getElementById("paymentStatusBox").innerHTML = `
+//             <div class="rejectBox">
+//                 ❌ Payment Rejected.<br><br>
+//                 ${payment.remarks || ""}
+//             </div>
+//         `;
+
+//     }
+
+// });
+
+// import {
+//     onSnapshot
+// } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
+
+// const paymentQuery = query(
+//     collection(db, "paymentRequests"),
+//     where("organizerEmail", "==", email)
+// );
+
+// const q = query(
+//     collection(db, "paymentRequests"),
+//     where("organizerEmail", "==", email)
+// );
+
+// onSnapshot(q, (snapshot) => {
+
+//     if (snapshot.empty) return;
+
+//     let latest = null;
+
+//     snapshot.forEach(doc => {
+
+//         const data = doc.data();
+
+//         if (!latest || data.createdAt > latest.createdAt) {
+//             latest = data;
+//         }
+
+//     });
+
+//     console.log("LIVE PAYMENT", latest);
+
+//     if (latest.paymentStatus === "approved") {
+
+//         statusBox.style.display = "block";
+//         statusBox.style.background = "#27ae60";
+//         statusBox.innerHTML = `
+//             ✅ Payment Approved Successfully.<br><br>
+//             Your tournament has been activated.
+//         `;
+
+//         submitBtn.disabled = true;
+//         submitBtn.innerHTML = "Approved";
+
+//         setTimeout(() => {
+
+//             window.location.href = "admin-dashboard.html";
+
+//         }, 3000);
+
+//     }
+
+//     else if (latest.paymentStatus === "rejected") {
+
+//         statusBox.style.display = "block";
+//         statusBox.style.background = "#e74c3c";
+//         statusBox.innerHTML = `
+//             ❌ Payment Rejected.<br><br>
+//             ${latest.remarks || ""}
+//         `;
+
+//         submitBtn.disabled = false;
+//         submitBtn.innerHTML = "Submit Payment";
+
+//     }
+
+// });
+
+
+
+/* ==========================
+   LIVE PAYMENT STATUS
+========================== */
+
+// const liveQuery = query(
+//     collection(db, "paymentRequests"),
+//     where("organizerEmail", "==", email),
+//     orderBy("createdAt", "desc"),
+//     limit(1)
+// );
+
+// onSnapshot(liveQuery, (snapshot) => {
+
+//     if (snapshot.empty) return;
+
+
+//     snapshot.forEach(doc => {
+
+//     console.log(
+//         "DOC",
+//         doc.id,
+//         doc.data().paymentStatus,
+//         doc.data().createdAt
+//     );
+
+// });
+
+//     // const payment = snapshot.docs[0].data();
+
+//     console.log("LIVE PAYMENT =", payment);
+
+//     console.log("DOC ID =", snapshot.docs[0].id);
+// console.log("STATUS =", payment.paymentStatus);
+// console.log("CREATED =", payment.createdAt);
+
+// console.log(payment.paymentStatus);
+
+//     const status =
+//         (payment.paymentStatus || "")
+//         .trim()
+//         .toLowerCase();
+
+//     const statusBox = document.getElementById("paymentStatus");
+
+//     statusBox.style.display = "block";
+
+//     if (status === "pending") {
+
+//         statusBox.style.background = "#f39c12";
+
+//         statusBox.innerHTML = `
+//         ⏳ Payment Submitted Successfully.<br><br>
+//         Waiting for Admin Approval.
+//         `;
+
+//         submitBtn.disabled = true;
+//         submitBtn.innerHTML = "Pending Approval";
+
+//     }
+
+//     else if (status === "approved") {
+
+//         statusBox.style.background = "#27ae60";
+
+//         statusBox.innerHTML = `
+//         ✅ Payment Approved Successfully.<br><br>
+//         Your Tournament has been Activated.
+//         `;
+
+//         submitBtn.disabled = true;
+//         submitBtn.innerHTML = "Approved";
+
+//         setTimeout(() => {
+
+//             window.location.href = "admin-dashboard.html";
+
+//         }, 3000);
+
+//     }
+
+//     else if (status === "rejected") {
+
+//         statusBox.style.background = "#e74c3c";
+
+//         statusBox.innerHTML = `
+//         ❌ Payment Rejected.<br><br>
+//         ${payment.remarks || "Please contact Admin."}
+//         `;
+
+//         submitBtn.disabled = false;
+//         submitBtn.innerHTML = "Submit Payment";
+
+//     }
+
+// });
+
+
+// const liveQuery = query(
+//     collection(db, "paymentRequests"),
+//     where("organizerEmail", "==", email)
+// );
+
+const liveQuery = query(
+    collection(db, "paymentRequests"),
+    where("organizerEmail", "==", email),
+    orderBy("createdAt", "desc"),
+    limit(1)
+);
+
+onSnapshot(liveQuery, (snapshot) => {
+
+    // if (snapshot.empty) return;
+
+    // let latestPayment = null;
+
+    // snapshot.forEach(doc => {
+
+    //     const data = doc.data();
+
+    //     console.log("DOC ID =", doc.id);
+    //     console.log(data);
+
+    //     const time =
+    //         data.createdAt?.seconds
+    //             ? data.createdAt.seconds
+    //             : data.createdAt;
+
+    //     if (
+    //         !latestPayment ||
+    //         time >
+    //         (
+    //             latestPayment.createdAt?.seconds
+    //             ? latestPayment.createdAt.seconds
+    //             : latestPayment.createdAt
+    //         )
+    //     ) {
+    //         latestPayment = data;
+    //     }
+
+    // });
+
+    // console.log("LATEST =", latestPayment);
+
+    // const status =
+    //     (latestPayment.paymentStatus || "")
+    //     .toLowerCase();
+
+    // statusBox.style.display = "block";
+
+    // if (status === "approved") {
+
+    //     statusBox.style.background = "#27ae60";
+    //     statusBox.innerHTML =
+    //     "✅ Payment Approved Successfully.<br><br>Your Tournament has been Activated.";
+
+    //     submitBtn.disabled = true;
+    //     submitBtn.innerHTML = "Approved";
+
+    //     setTimeout(() => {
+
+    //         window.location.href = "admin-dashboard.html";
+
+    //     }, 30000);
+
+    // }
+    // else if (status === "pending") {
+
+    //     statusBox.style.background = "#f39c12";
+    //     statusBox.innerHTML =
+    //     "⏳ Waiting for Admin Approval.";
+
+    //     submitBtn.disabled = true;
+    //     submitBtn.innerHTML = "Pending Approval";
+
+    // }
+    // else if (status === "rejected") {
+
+    //     statusBox.style.background = "#e74c3c";
+    //     statusBox.innerHTML =
+    //     "❌ Payment Rejected.<br><br>" +
+    //     (latestPayment.remarks || "");
+
+    //     submitBtn.disabled = false;
+    //     submitBtn.innerHTML = "Submit Payment";
+
+    // }
+
+if(snapshot.empty){
+
+    statusBox.style.display="none";
+
+    submitBtn.disabled=false;
+    submitBtn.innerHTML="Submit Payment";
+
+    return;
+
+}
+
+const latestPayment = snapshot.docs[0].data();
+
+const status = (latestPayment.paymentStatus || "").toLowerCase();
+
+if(status==="pending"){
+
+    statusBox.style.display="block";
+    statusBox.style.background="#f39c12";
+    statusBox.innerHTML="⏳ Waiting for Admin Approval";
+
+    submitBtn.disabled=true;
+    submitBtn.innerHTML="Pending Approval";
+
+}
+else if(status==="approved"){
+
+    // statusBox.style.display="block";
+    // statusBox.style.background="#27ae60";
+    // statusBox.innerHTML="✅ Payment Approved Successfully";
+
+    // submitBtn.disabled=false;
+    // submitBtn.innerHTML="Submit Payment";
+
+    statusBox.style.display = "none";
+
+submitBtn.disabled = false;
+submitBtn.innerHTML = "Submit Payment";
+
+document.getElementById("transactionId").value = "";
+
+}
+else if(status==="rejected"){
+
+    statusBox.style.display="block";
+    statusBox.style.background="#e74c3c";
+    statusBox.innerHTML="❌ Payment Rejected<br><br>"
+        +(latestPayment.remarks || "");
+
+    submitBtn.disabled=false;
+    submitBtn.innerHTML="Submit Payment";
+
+}
+
+
+
+
+});
+
+</script>
+
+</body>
+
+</html>

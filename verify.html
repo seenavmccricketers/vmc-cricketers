@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>VMC Cricketer's</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
+<style>
+body{
+  margin:0;
+  background:#0b1c2d;
+  color:#fff;
+  font-family:Segoe UI;
+}
+
+.header{
+  background:linear-gradient(90deg,#1e3c72,#2a5298);
+  padding:14px 20px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+.header h2{ margin:0; font-size:18px; }
+
+.dashboard-btn{
+  background:#ffcc00;
+  color:#000;
+  border:none;
+  padding:8px 14px;
+  border-radius:20px;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+.container{ padding:20px; }
+
+.pdf-btn{
+  background:#ffd700;
+  color:#000;
+  border:none;
+  padding:10px 16px;
+  border-radius:10px;
+  font-weight:bold;
+  cursor:pointer;
+  margin-bottom:14px;
+}
+
+.summary{
+  display:flex;
+  gap:12px;
+  flex-wrap:wrap;
+  margin-bottom:16px;
+}
+.sum-box{
+  background:#102840;
+  padding:10px 16px;
+  border-radius:10px;
+  font-weight:bold;
+}
+.pendingC{color:orange}
+.verifiedC{color:#5cb85c}
+.rejectedC{color:#d9534f}
+
+#list{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(340px,1fr));
+  gap:16px;
+}
+
+.card{
+  background:#102840;
+  border-radius:14px;
+  padding:16px;
+}
+
+.card img{
+  max-width:260px;
+  border-radius:10px;
+  margin-top:10px;
+}
+
+.status{ margin-top:8px; font-weight:bold; }
+.pending{color:orange}
+.verified{color:#5cb85c}
+.rejected{color:#d9534f}
+
+button.verify{ background:#5cb85c; }
+button.reject{ background:#d9534f; }
+button.deleteOne{ background:#ff8800; }
+
+.action-btn{
+  padding:8px 14px;
+  border:none;
+  border-radius:8px;
+  font-weight:bold;
+  color:#fff;
+  margin-right:10px;
+  cursor:pointer;
+}
+
+.footer{
+  background:linear-gradient(90deg,#1e3c72,#2a5298);
+  padding:10px;
+  text-align:center;
+  font-size:14px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+  <h2>🧾 Receipt Verification</h2>
+  <button class="dashboard-btn" onclick="location.href='index.html'">
+    Dashboard
+  </button>
+</div>
+
+<div class="container">
+
+  <!-- <button class="pdf-btn" onclick="downloadPDF()">
+    ⬇ Download All Details PDF
+  </button> -->
+
+  <button class="pdf-btn" onclick="downloadPDF()">
+  ⬇ Download All Details PDF
+</button>
+
+<button class="pdf-btn"
+  style="background:#28a745;color:white;margin-left:8px;"
+  onclick="downloadExcel()">
+  📊 Download Excel
+</button>
+
+<button id="deleteAll"
+ style="background:#d9534f;color:#fff;border:none;padding:10px 16px;border-radius:10px;font-weight:bold;margin-bottom:16px;cursor:pointer;">
+DELETE ALL ENTRIES </button>
+
+  <div class="summary">
+    <div class="sum-box verifiedC">Verified: <span id="vCount">0</span></div>
+    <div class="sum-box pendingC">Pending: <span id="pCount">0</span></div>
+    <div class="sum-box rejectedC">Rejected: <span id="rCount">0</span></div>
+  </div>
+
+  <div id="list"></div>
+</div>
+
+<div class="footer">
+ 🏏 VMC Cricketer's © 2026 | Developed By KBU Software Pvt Ltd.
+</div>
+
+<script type="module">
+import { initializeApp } from
+"https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
+
+import {
+  getFirestore,
+  collection,
+  getDocs,
+  doc,
+  updateDoc,
+  deleteDoc
+} from
+"https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
+
+function optimizeImage(url){
+  if(!url) return "";
+  if(!url.includes("res.cloudinary.com")) return url;
+  return url.replace("/upload/","/upload/q_auto,f_auto/");
+}
+
+const app = initializeApp({
+
+  apiKey: "AIzaSyBIY7j6h-3BcauIWe7hPp6Z4EpZ4vIAGlI",
+
+  authDomain: "vmccricketers.firebaseapp.com",
+
+  projectId: "vmccricketers",
+
+  
+
+});
+
+const db = getFirestore(app);
+const list=document.getElementById("list");
+
+let cachedDocs=[];
+
+function statusClass(s){
+  if(s==="verified") return "verified";
+  if(s==="rejected") return "rejected";
+  return "pending";
+}
+
+async function load(){
+
+  const scrollPosition = window.scrollY; // 🔥 Save scroll
+
+  list.innerHTML="";
+  let v=0,p=0,r=0;
+
+  const snap = await getDocs(collection(db,"players"));
+  cachedDocs=[...snap.docs].reverse();
+
+  cachedDocs.forEach(d=>{
+    const pData=d.data();
+    const status=pData.verified || "pending";
+
+    if(status==="verified") v++;
+    else if(status==="rejected") r++;
+    else p++;
+
+    const card=document.createElement("div");
+    card.className="card";
+
+    card.innerHTML=`
+      <h3>${pData.name}</h3>
+      ${pData.receipt ? `<img loading="lazy" src="${optimizeImage(pData.receipt)}">` : "<i>No receipt</i>"}
+      <div class="status ${statusClass(status)}">
+        Status: ${status.toUpperCase()}
+      </div>
+      <div style="margin-top:12px">
+        <button class="action-btn verify">VERIFY</button>
+        <button class="action-btn reject">REJECT</button>
+        <button class="action-btn deleteOne">DELETE</button>
+      </div>
+    `;
+
+    card.querySelector(".verify").onclick=async()=>{
+      await updateDoc(doc(db,"players",d.id),{verified:"verified"});
+      load();
+    };
+
+    card.querySelector(".reject").onclick=async()=>{
+      await updateDoc(doc(db,"players",d.id),{verified:"rejected"});
+      load();
+    };
+
+    card.querySelector(".deleteOne").onclick=async()=>{
+      if(localStorage.getItem("isAdmin")!=="true"){alert("Admin only");return;}
+      if(!confirm("Delete this player?")) return;
+      await deleteDoc(doc(db,"players",d.id));
+      load();
+    };
+
+    list.appendChild(card);
+  });
+
+  vCount.textContent=v;
+  pCount.textContent=p;
+  rCount.textContent=r;
+
+  window.scrollTo(0, scrollPosition); // 🔥 Restore scroll
+}
+
+// /* PDF */
+// window.downloadPDF = async ()=>{
+//   const { jsPDF } = window.jspdf;
+//   const pdf = new jsPDF();
+//   let y=10;
+
+//   pdf.setFontSize(16);
+//   pdf.text("Receipt Verification Details",10,y);
+//   y+=10;
+
+//   for(const d of cachedDocs){
+//     const p=d.data();
+//     const status=(p.verified||"pending").toUpperCase();
+
+//     if(y>250){ pdf.addPage(); y=10; }
+
+//     pdf.setFontSize(12);
+//     pdf.text(`Name: ${p.name}`,10,y);
+//     pdf.text(`Status: ${status}`,10,y+6);
+//     y+=12;
+
+//     if(p.receipt){
+//       const img=await loadImage(p.receipt);
+//       pdf.addImage(img,"JPEG",10,y,40,40);
+//       y+=45;
+//     }
+//   }
+
+//   pdf.save("verify_details.pdf");
+// };
+
+/* PDF DOWNLOAD WITH HIGHLIGHTED UTR */
+
+window.downloadPDF = async () => {
+
+  const { jsPDF } = window.jspdf;
+  const pdf = new jsPDF();
+
+  let y = 15;
+
+  pdf.setFontSize(16);
+  pdf.setFont("helvetica", "bold");
+  pdf.text("VMC Cricketer's - Receipt Verification Details", 10, y);
+
+  y += 15;
+
+  for (const d of cachedDocs) {
+
+    const p = d.data();
+    const status = (p.verified || "pending").toUpperCase();
+
+    // Keep player details together on the page
+    if (y > 220) {
+      pdf.addPage();
+      y = 15;
+    }
+
+    pdf.setFont("helvetica", "bold");
+    pdf.setFontSize(12);
+    pdf.setTextColor(0, 0, 0);
+
+    pdf.text(`Player Name: ${p.name || "-"}`, 10, y);
+    y += 8;
+
+    pdf.setFont("helvetica", "normal");
+    pdf.text(`Mobile Number: ${p.mobile || "-"}`, 10, y);
+    y += 8;
+
+    pdf.text(`Role: ${p.role || "-"}`, 10, y);
+    y += 9;
+
+    // Highlighted UTR
+    pdf.setFillColor(255, 230, 100);
+    pdf.roundedRect(10, y - 6, 110, 17, 2, 2, "F");
+
+    pdf.setFont("helvetica", "bold");
+    pdf.setFontSize(16);
+    pdf.setTextColor(0, 0, 0);
+
+    pdf.text(`UTR: ${String(p.utr || "-")}`, 14, y + 5);
+
+    y += 23;
+
+    // Verification status
+    pdf.setFontSize(11);
+    pdf.setTextColor(0, 0, 0);
+    pdf.text(`Status: ${status}`, 10, y);
+
+    y += 10;
+
+    // Receipt image
+    if (p.receipt) {
+
+      if (y > 220) {
+        pdf.addPage();
+        y = 15;
+      }
+
+      try {
+        const img = await loadImage(p.receipt);
+
+        pdf.addImage(img, "JPEG", 10, y, 40, 40);
+
+        y += 45;
+
+      } catch (error) {
+        console.error("Receipt image error:", error);
+        pdf.text("Receipt image could not be loaded.", 10, y);
+        y += 8;
+      }
+    }
+
+    y += 10;
+  }
+
+  pdf.save("VMC_Cricketers_Verification_Details.pdf");
+};
+
+
+/* EXCEL DOWNLOAD */
+
+window.downloadExcel = () => {
+
+  const excelData = cachedDocs.map(d => {
+
+    const p = d.data();
+
+    return {
+      "Player Name": p.name || "",
+      "Mobile Number": p.mobile || "",
+      "UTR Number": String(p.utr || ""),
+      "Role": p.role || ""
+    };
+
+  });
+
+  if (excelData.length === 0) {
+    alert("No player records available!");
+    return;
+  }
+
+  // Create worksheet
+  const worksheet = XLSX.utils.json_to_sheet(excelData);
+
+  // Set column widths
+  worksheet["!cols"] = [
+    { wch: 25 },
+    { wch: 18 },
+    { wch: 25 },
+    { wch: 18 }
+  ];
+
+  // Create workbook
+  const workbook = XLSX.utils.book_new();
+
+  XLSX.utils.book_append_sheet(
+    workbook,
+    worksheet,
+    "Player Details"
+  );
+
+  // Download Excel file
+  XLSX.writeFile(
+    workbook,
+    "VMC_Cricketers_Player_Details.xlsx"
+  );
+
+};
+
+function loadImage(url){
+  return new Promise(resolve=>{
+    const img=new Image();
+    img.crossOrigin="anonymous";
+    img.onload=()=>{
+      const c=document.createElement("canvas");
+      c.width=img.width;
+      c.height=img.height;
+      c.getContext("2d").drawImage(img,0,0);
+      resolve(c.toDataURL("image/jpeg"));
+    };
+    img.src=optimizeImage(url);
+  });
+}
+
+document.getElementById("deleteAll").onclick=async()=>{
+  if(localStorage.getItem("isAdmin")!=="true"){alert("Admin only");return;}
+  if(!confirm("DELETE ALL players?")) return;
+
+  const snap = await getDocs(collection(db,"players"));
+  for(const d of snap.docs){
+    await deleteDoc(doc(db,"players",d.id));
+  }
+  load();
+};
+
+load();
+</script>
+
+</body>
+</html>
