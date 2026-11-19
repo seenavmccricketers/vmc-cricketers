@@ -268,19 +268,51 @@ button{
 
 <header>
   <div>🏏 Player Registration </div>
-  <a href="index.html">Dashboard</a>
+  <!-- <a href="index.html">Dashboard</a> -->
 </header>
 
 <main>
 
 <!-- 🔔 ANNOUNCEMENT -->
-<div class="announce">
+<!-- <div class="announce">
   <h3>📢 Important Notice: </h3>
   <h5>
   
 Player's Must Complete The Registration Process & Upload the Profile Photo & Payment Receipt. Kindly ensure that both the Profile Photo and Payment Receipt are under 200KB Only. After successful registration, please verify your status on the Player's Page.
   </h5>
+</div> -->
+
+
+<!-- <div class="announce">
+  <h3>🏏 VMC Cricketer's Presents</h3>
+
+  <h5>
+    🌟 PREMIER LEAGUE 2026 🌟
+    <br><br>
+
+    🎂 Celebrating the Birthday of Suresh Gowdru
+    <br><br>
+
+    🏆 Tournament Name: SUBEDAR PALYA CUP
+    <br>
+
+    🔥 Day & Night Long Pitch Cricket Tournament
+    <br><br>
+
+    📅 Last Date to Register: 7th December 2026
+    <br><br>
+
+    🏏 Don't Miss the Action! Register Now and Be Part of the Cricketing Celebration!
+  </h5>
+</div> -->
+
+
+
+<div class="announce">
+  <h3>🏏 VMC Cricketer's Presents "PREMIER LEAGUE 2026" 🏆</h3>
+  <h5>🎂 Celebrating Suresh Gowdru's Birthday with the "SUBEDAR PALYA CUP" – A Day & Night Long Pitch Cricket Tournament! 🔥 | 📅 Last Date to Register: 7th December 2026. Register Now! 🏏</h5>
 </div>
+
 
 <form id="regForm">
 
@@ -307,39 +339,82 @@ Player's Must Complete The Registration Process & Upload the Profile Photo & Pay
   <option>Batsman</option>
   <option>Bowler</option>
   <option>All-Rounder</option>
-  <option>Wicket -Keeper Batsman</option>
+  <!-- <option>Wicket -Keeper Batsman</option> -->
 </select>
 
-<label>Batting</label>
+<!-- <label>Batting</label>
 <select id="batting" required>
   <option value="">Select</option>
   <option>Right Hand</option>
   <option>Left Hand</option>
-</select>
-
+</select> -->
+<!-- 
 <label>Bowling</label>
 <select id="bowling" required>
   <option value="">Select</option>
   <option>Right Arm</option>
   <option>Left Arm</option>
   <option>Not a Bowler</option>
+</select> -->
+
+
+<!-- AADHAAR NUMBER -->
+<label>Aadhaar Number</label>
+<input
+  id="batting"
+  type="text"
+  inputmode="numeric"
+  maxlength="12"
+  pattern="[0-9]{12}"
+  placeholder="Enter 12-digit Aadhaar Number"
+  required
+>
+
+<div id="aadhaarError" class="error-text"></div>
+
+
+
+
+<!-- JERSEY SIZE -->
+<label>Jersey Size</label>
+<select id="bowling" required>
+  <option value="">Select Jersey Size</option>
+  <option value="M">M</option>
+  <option value="L">L</option>
+  <option value="XL">XL</option>
+  <option value="XXL">XXL</option>
+  <option value="XXXL">XXXL</option>
+  <option value="XXXL">XXXXL</option>
 </select>
+
+
+
+
+
 
 <label>DOB</label>
 <input id="dob" type="date" required>
 
-<label>Address</label>
-<textarea id="address" placeholder="Enter the address" required></textarea>
+<!-- <label>Address</label>
+<textarea id="address" placeholder="Enter the address" required></textarea> -->
+
+<!-- PINCODE -->
+<label>PinCode</label>
+<select id="address" required>
+  <option value="">Select PinCode</option>
+  <option value="560022">560022</option>
+  <option value="560054">560054</option>
+</select>
 
 <h3>💳 Payment Section :</h3>
 
-<label>Pay the Registration Fee Rs.800 Only</label>
+<label>Pay the Registration Fee Rs.500 Only</label>
 <br>
-<label>Pay Using UPI ID : umeshcse09@ybl <br>or</br> Use Below Scanner</label>
+<label>Pay Using UPI ID : 9632909526-2@ybl <br>or</br> Use Below Scanner</label>
 
 
 <div class="qr-box">
-  <img src="assets/images/SBI Scanner.png">
+  <img src="assets/images/VMC Scanner.jpeg">
   <p>Note : Upload receipt after payment</p>
 </div>
 
@@ -472,7 +547,39 @@ const app=initializeApp(firebaseConfig);
 const db=getFirestore(app);
 
 /* DOM */
-const regForm=document.getElementById("regForm");
+// const regForm=document.getElementById("regForm");
+
+
+
+
+/* DOM */
+const regForm = document.getElementById("regForm");
+
+/* ===== ADMIN / NORMAL USER LINK CONTROL ===== */
+
+const params = new URLSearchParams(window.location.search);
+const isAdminLink = params.get("access") === "admin";
+
+// Show Dashboard only for admin link
+if (isAdminLink) {
+    const dashboardBtn = document.createElement("a");
+
+    dashboardBtn.href = "index.html";
+    dashboardBtn.innerText = "Dashboard";
+
+    dashboardBtn.style.cssText = `
+        background:#ffd700;
+        color:#000;
+        padding:6px 14px;
+        border-radius:20px;
+        text-decoration:none;
+        font-size:14px;
+    `;
+
+    document.querySelector("header").appendChild(dashboardBtn);
+}
+
+/* Continue your existing registration code below */
 
 /* =============================
    REGISTRATION BUTTON CONTROL
@@ -517,10 +624,18 @@ const nameInput=document.getElementById("name");
 const mobileInput=document.getElementById("mobile");
 const mobileError=document.getElementById("mobileError");
 const roleInput=document.getElementById("role");
-const battingInput=document.getElementById("batting");
-const bowlingInput=document.getElementById("bowling");
-const dobInput=document.getElementById("dob");
-const addressInput=document.getElementById("address");
+// const battingInput=document.getElementById("batting");
+// const bowlingInput=document.getElementById("bowling");
+// const dobInput=document.getElementById("dob");
+// const addressInput=document.getElementById("address");
+
+
+const aadhaarInput = document.getElementById("batting");
+const jerseyInput = document.getElementById("bowling");
+const dobInput = document.getElementById("dob");
+const pinCodeInput = document.getElementById("address");
+
+const aadhaarError = document.getElementById("aadhaarError");
 
 const utrInput = document.getElementById("utr");
 const utrError = document.getElementById("utrError");
@@ -540,6 +655,7 @@ regForm.addEventListener("reset", () => {
     receiptError.textContent = "";
     mobileError.textContent = "";
     utrError.textContent = "";
+    aadhaarError.textContent = "";
 
     // Clear file size messages
     photoSize.textContent = "";
@@ -565,6 +681,19 @@ utrInput.addEventListener("input", () => {
     utrInput.value = utrInput.value.replace(/\D/g, "").slice(0, 12);
 
     utrError.textContent = "";
+
+});
+
+
+/* ===== AADHAAR NUMBER VALIDATION ===== */
+
+aadhaarInput.addEventListener("input", () => {
+
+  aadhaarInput.value = aadhaarInput.value
+    .replace(/\D/g, "")
+    .slice(0, 12);
+
+  aadhaarError.textContent = "";
 
 });
 
@@ -721,6 +850,21 @@ async function isMobileApproved(mobile){
 
 regForm.addEventListener("submit",async(e)=>{
  e.preventDefault();
+
+ // ===== AADHAAR VALIDATION =====
+
+aadhaarError.textContent = "";
+
+const aadhaarNumber = aadhaarInput.value.trim();
+
+if (!/^[0-9]{12}$/.test(aadhaarNumber)) {
+
+  aadhaarError.textContent =
+    "Please enter a valid 12-digit Aadhaar Number.";
+
+  aadhaarInput.focus();
+  return;
+}
 
 
  // ===== UTR VALIDATION =====
@@ -932,10 +1076,15 @@ await runTransaction(db, async (transaction) => {
     mobile: normalizedMobile,
     utr: utrNumber,
     role: roleInput.value,
-    batting: battingInput.value,
-    bowling: bowlingInput.value || "NA",
-    dob: dobInput.value,
-    address: addressInput.value.trim(),
+    // batting: battingInput.value,
+    // bowling: bowlingInput.value || "NA",
+    // dob: dobInput.value,
+    // address: addressInput.value.trim(),
+
+    aadhaarNumber: aadhaarInput.value.trim(),
+jerseySize: jerseyInput.value,
+dob: dobInput.value,
+pinCode: pinCodeInput.value,
     photo: photo64,
     receipt: receipt64,
     sold: false,
@@ -998,9 +1147,19 @@ document.getElementById("successSubText").innerText =
 document.getElementById("successScreen").style.display = "flex";
 
 
-setTimeout(()=>{
-  window.location.href="index.html";
-},8000);
+// setTimeout(()=>{
+//   window.location.href="index.html";
+// },8000);
+
+
+// Admin / Organiser: redirect to Dashboard after 8 seconds
+if (isAdminLink) {
+  setTimeout(() => {
+    window.location.href = "index.html";
+  }, 8000);
+}
+
+// Normal users: stay on the Registration Success screen
   
 
 
