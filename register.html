@@ -257,7 +257,14 @@ button{
 
 
 
-
+#celebrationCanvas {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 2001;
+}
 
 
 
@@ -846,6 +853,99 @@ async function isMobileApproved(mobile){
 }
 
 
+
+
+
+
+/* ===== VMC FIREWORKS CELEBRATION ===== */
+
+function startCelebration() {
+
+  const canvas = document.getElementById("celebrationCanvas");
+  const ctx = canvas.getContext("2d");
+
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  let particles = [];
+  let running = true;
+
+  function createFirework() {
+
+    const x = Math.random() * canvas.width;
+    const y = Math.random() * canvas.height * 0.55;
+
+    const colors = [
+      "#FFD700", "#FF3131",
+      "#00FFFF", "#FF69B4",
+      "#00FF88", "#FFFFFF"
+    ];
+
+    const color = colors[
+      Math.floor(Math.random() * colors.length)
+    ];
+
+    for (let i = 0; i < 65; i++) {
+
+      const angle = Math.random() * Math.PI * 2;
+      const speed = Math.random() * 5 + 1;
+
+      particles.push({
+        x,
+        y,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed,
+        life: 100,
+        color
+      });
+
+    }
+  }
+
+  function animate() {
+
+    if (!running) return;
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    if (Math.random() < 0.07) {
+      createFirework();
+    }
+
+    particles.forEach((p, index) => {
+
+      p.x += p.vx;
+      p.y += p.vy;
+
+      p.vy += 0.035;
+      p.life--;
+
+      ctx.globalAlpha = p.life / 100;
+      ctx.fillStyle = p.color;
+
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, 3, 0, Math.PI * 2);
+      ctx.fill();
+
+      if (p.life <= 0) {
+        particles.splice(index, 1);
+      }
+
+    });
+
+    ctx.globalAlpha = 1;
+
+    requestAnimationFrame(animate);
+  }
+
+  animate();
+
+  setTimeout(() => {
+    running = false;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  }, 7000);
+
+}
 /* ===== Form Submit ===== */
 
 regForm.addEventListener("submit",async(e)=>{
@@ -1147,9 +1247,12 @@ document.getElementById("successSubText").innerText =
 document.getElementById("successScreen").style.display = "flex";
 
 
-// setTimeout(()=>{
-//   window.location.href="index.html";
-// },8000);
+startCelebration();
+
+
+setTimeout(()=>{
+  window.location.href="register.html";
+},8000);
 
 
 // Admin / Organiser: redirect to Dashboard after 8 seconds
@@ -1247,11 +1350,13 @@ if (err.message === "UTR_ALREADY_REGISTERED") {
 </div> -->
 
 
+<canvas id="celebrationCanvas"></canvas>
+
 <div id="successScreen" class="success-overlay">
 
   <div class="success-box">
 
-    <img src="assets/images/Logo.png" class="success-logo">
+    <img src="assets/images/VMC Logo.jpeg" class="success-logo">
 
     <h2 id="successTitle">Registration Successful 🎉</h2>
 
