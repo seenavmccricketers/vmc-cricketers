@@ -756,60 +756,132 @@ function showPlayer(status){
 };
 
 /* BID */
-window.placeBid=async()=>{
- if(!isAdmin || !auctionLive || !current) return;
 
- const amt=Number(bidAmount.value);
- const i=teamSelect.value;
- if(amt<=0) return alert("Enter amount");
- if(teams[i].money<amt) return alert("No balance");
+// window.placeBid=async()=>{
+//  if(!isAdmin || !auctionLive || !current) return;
 
- teams[i].money-=amt;
+//  const amt=Number(bidAmount.value);
+//  const i=teamSelect.value;
+//  if(amt<=0) return alert("Enter amount");
+//  if(teams[i].money<amt) return alert("No balance");
 
- await updateDoc(doc(db,"teams",teams[i].name),{
-   money:teams[i].money
- });
+//  teams[i].money-=amt;
 
- await updateDoc(doc(db,"players",current.id),{
-   sold:true,
-   soldAmount:amt,
-   soldTeam:teams[i].name,
-   soldAt:Date.now()
- });
-
-//  await addDoc(collection(db,"teamPlayers"),{
-//    teamName:teams[i].name,
-//    name:current.name,
-//    photo:current.photo,
-//    amount:amt
+//  await updateDoc(doc(db,"teams",teams[i].name),{
+//    money:teams[i].money
 //  });
 
-await addDoc(collection(db,"teamPlayers"),{
-    teamName:teams[i].name,
-    playerId:current.id,
-    name:current.name,
-    role:current.role || "",
-    mobile:current.mobile || "",
-    photo:current.photo || "",
-    amount:amt,
-    soldAt:Date.now()
-});
+//  await updateDoc(doc(db,"players",current.id),{
+//    sold:true,
+//    soldAmount:amt,
+//    soldTeam:teams[i].name,
+//    soldAt:Date.now()
+//  });
 
-// After auction ends,your Auction page should execute,Otherwise every tournament remains
+// //  await addDoc(collection(db,"teamPlayers"),{
+// //    teamName:teams[i].name,
+// //    name:current.name,
+// //    photo:current.photo,
+// //    amount:amt
+// //  });
 
-await updateDoc(activeTournamentRef,{
-status:"Completed",
-winner:"Team ABC",
-completedAt:Date.now()
-});
+// await addDoc(collection(db,"teamPlayers"),{
+//     teamName:teams[i].name,
+//     playerId:current.id,
+//     name:current.name,
+//     role:current.role || "",
+//     mobile:current.mobile || "",
+//     photo:current.photo || "",
+//     amount:amt,
+//     soldAt:Date.now()
+// });
 
- showPlayer("sold");
+// // After auction ends,your Auction page should execute,Otherwise every tournament remains
 
-//  announceSold(teams[i].name, amt);
+// await updateDoc(activeTournamentRef,{
+// status:"Completed",
+// winner:"Team ABC",
+// completedAt:Date.now()
+// });
 
- bidAmount.value="";
- setTimeout(nextPlayer,800);
+//  showPlayer("sold");
+
+// //  announceSold(teams[i].name, amt);
+
+//  bidAmount.value="";
+//  setTimeout(nextPlayer,800);
+// };
+
+
+
+/* BID */
+window.placeBid = async () => {
+
+    if (!isAdmin || !auctionLive || !current) return;
+
+    const amt = Number(bidAmount.value);
+    const i = Number(teamSelect.value);
+
+    if (amt <= 0) {
+        return alert("Enter amount");
+    }
+
+    if (teams[i].money < amt) {
+        return alert("No balance");
+    }
+
+    try {
+
+        // Deduct team balance
+        teams[i].money -= amt;
+
+        await updateDoc(doc(db, "teams", teams[i].name), {
+            money: teams[i].money
+        });
+
+        // Mark player as SOLD
+        await updateDoc(doc(db, "players", current.id), {
+            sold: true,
+            soldAmount: amt,
+            soldTeam: teams[i].name,
+            soldAt: Date.now()
+        });
+
+        // Add player to team
+        await addDoc(collection(db, "teamPlayers"), {
+
+            teamName: teams[i].name,
+            playerId: current.id,
+            name: current.name,
+            role: current.role || "",
+            mobile: current.mobile || "",
+            photo: current.photo || "",
+            amount: amt,
+            soldAt: Date.now()
+
+        });
+
+        // Show SOLD status
+        showPlayer("sold");
+
+        // Clear bid input
+        bidAmount.value = "";
+
+        // Move to next player
+        setTimeout(() => {
+            nextPlayer();
+        }, 800);
+
+    } catch (error) {
+
+        console.error("Bidding Error:", error);
+
+        alert("Error processing bid. Please check the console.");
+
+    }
+
 };
+
 
 /* UNSOLD */
 window.skipPlayer=()=>{
