@@ -529,56 +529,106 @@ function optimizeImage(url) {
 
 
 // UPDATE PLAYER STATISTICS
+// async function updateCounts() {
+
+//   try {
+
+//     const playersRef = collection(db, "players");
+
+//     const roles = [
+//       "Batsman",
+//       "Bowler",
+//       "All-Rounder",
+//       "Wicket -Keeper Batsman"
+//     ];
+
+//     const totalPromise = getCountFromServer(
+//       query(playersRef)
+//     );
+
+//     const rolePromises = roles.map(role =>
+//       getCountFromServer(
+//         query(playersRef, where("role", "==", role))
+//       )
+//     );
+
+//     const results = await Promise.all([
+//       totalPromise,
+//       ...rolePromises
+//     ]);
+
+//     document.getElementById("totalCount").textContent =
+//       results[0].data().count;
+
+//     document.getElementById("batCount").textContent =
+//       results[1].data().count;
+
+//     document.getElementById("bowlCount").textContent =
+//       results[2].data().count;
+
+//     document.getElementById("allCount").textContent =
+//       results[3].data().count;
+
+//     document.getElementById("wkbCount").textContent =
+//       results[4].data().count;
+
+//   } catch (error) {
+
+//     console.error("Statistics error:", error);
+
+//   }
+
+// }
+
+
+// UPDATE PLAYER STATISTICS
 async function updateCounts() {
 
-  try {
+  const playersRef = collection(db, "players");
 
-    const playersRef = collection(db, "players");
+  const stats = [
+    { id: "totalCount", role: null },
+    { id: "batCount", role: "Batsman" },
+    { id: "bowlCount", role: "Bowler" },
+    { id: "allCount", role: "All-Rounder" },
+    { id: "wkbCount", role: "Wicket -Keeper Batsman" }
+  ];
 
-    const roles = [
-      "Batsman",
-      "Bowler",
-      "All-Rounder",
-      "Wicket -Keeper Batsman"
-    ];
+  const results = await Promise.allSettled(
 
-    const totalPromise = getCountFromServer(
-      query(playersRef)
-    );
+    stats.map(item => {
 
-    const rolePromises = roles.map(role =>
-      getCountFromServer(
-        query(playersRef, where("role", "==", role))
-      )
-    );
+      const playersQuery = item.role
+        ? query(playersRef, where("role", "==", item.role))
+        : query(playersRef);
 
-    const results = await Promise.all([
-      totalPromise,
-      ...rolePromises
-    ]);
+      return getCountFromServer(playersQuery);
 
-    document.getElementById("totalCount").textContent =
-      results[0].data().count;
+    })
 
-    document.getElementById("batCount").textContent =
-      results[1].data().count;
+  );
 
-    document.getElementById("bowlCount").textContent =
-      results[2].data().count;
+  results.forEach((result, index) => {
 
-    document.getElementById("allCount").textContent =
-      results[3].data().count;
+    if (result.status === "fulfilled") {
 
-    document.getElementById("wkbCount").textContent =
-      results[4].data().count;
+      document.getElementById(stats[index].id).textContent =
+        result.value.data().count;
 
-  } catch (error) {
+    } else {
 
-    console.error("Statistics error:", error);
+      console.error(
+        "Statistics failed for:",
+        stats[index].id,
+        result.reason
+      );
 
-  }
+    }
+
+  });
 
 }
+
 
 
 // LOAD CURRENT PAGE
