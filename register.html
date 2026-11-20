@@ -346,7 +346,7 @@ Player's Must Complete The Registration Process & Upload the Profile Photo & Pay
   <option>Batsman</option>
   <option>Bowler</option>
   <option>All-Rounder</option>
-  <!-- <option>Wicket -Keeper Batsman</option> -->
+  <option>Wicket -Keeper Batsman</option>
 </select>
 
 <!-- <label>Batting</label>
@@ -391,7 +391,7 @@ Player's Must Complete The Registration Process & Upload the Profile Photo & Pay
   <option value="XL">XL</option>
   <option value="XXL">XXL</option>
   <option value="XXXL">XXXL</option>
-  <option value="XXXL">XXXXL</option>
+  <option value="XXXXL">XXXXL</option>
 </select>
 
 
@@ -1040,10 +1040,10 @@ if (!/^[0-9]{12}$/.test(aadhaarNumber)) {
   const receipt64=await toBase64(receipt.files[0]);
 
   // Generate Player ID
-const snapshot = await getDocs(collection(db,"players"));
-const count = snapshot.size + 1;
+// const snapshot = await getDocs(collection(db,"players"));
+// const count = snapshot.size + 1;
 
-const playerId = "VMC" + String(count).padStart(3,'0');
+// const playerId = "VMC" + String(count).padStart(3,'0');
 
 
 
@@ -1133,23 +1133,53 @@ const utrRef = doc(
 
 const playerRef = doc(collection(db, "players"));
 
+
+let playerId = "";
+
+const counterRef = doc(db, "settings", "playerCounter");
+
+
 await runTransaction(db, async (transaction) => {
 
-  // Check duplicate mobile
+  // Read all documents before writing
   const existingRegistration =
     await transaction.get(registrationRef);
 
+  const existingUTR =
+    await transaction.get(utrRef);
+
+  const counterSnap =
+    await transaction.get(counterRef);
+
+  // Duplicate mobile check
   if (existingRegistration.exists()) {
     throw new Error("MOBILE_ALREADY_REGISTERED");
   }
 
-  // Check duplicate UTR
-  const existingUTR =
-    await transaction.get(utrRef);
-
+  // Duplicate UTR check
   if (existingUTR.exists()) {
     throw new Error("UTR_ALREADY_REGISTERED");
   }
+
+  // Counter must be initialized by the admin
+  if (!counterSnap.exists()) {
+    throw new Error("PLAYER_COUNTER_NOT_INITIALIZED");
+  }
+
+  const lastNumber = Number(counterSnap.data().lastNumber);
+
+  if (!Number.isSafeInteger(lastNumber) || lastNumber < 0) {
+    throw new Error("INVALID_PLAYER_COUNTER");
+  }
+
+  const nextNumber = lastNumber + 1;
+
+  playerId = "VMC" + String(nextNumber).padStart(3, "0");
+
+  // Update counter
+  transaction.update(counterRef, {
+    lastNumber: nextNumber
+  });
 
   // Save mobile lock
   transaction.set(registrationRef, {
@@ -1169,22 +1199,16 @@ await runTransaction(db, async (transaction) => {
     registeredAt: Date.now()
   });
 
-  // Save player details
+  // Save player
   transaction.set(playerRef, {
     playerId: playerId,
     name: nameInput.value.trim(),
     mobile: normalizedMobile,
     utr: utrNumber,
     role: roleInput.value,
-    // batting: battingInput.value,
-    // bowling: bowlingInput.value || "NA",
-    // dob: dobInput.value,
-    // address: addressInput.value.trim(),
-
-    aadhaarNumber: aadhaarInput.value.trim(),
-jerseySize: jerseyInput.value,
-dob: dobInput.value,
-pinCode: pinCodeInput.value,
+    jerseySize: jerseyInput.value,
+    dob: dobInput.value,
+    pinCode: pinCodeInput.value,
     photo: photo64,
     receipt: receipt64,
     sold: false,
@@ -1193,30 +1217,127 @@ pinCode: pinCodeInput.value,
 
 });
 
+// await runTransaction(db, async (transaction) => {
+
+//   // Check duplicate mobile
+//   const existingRegistration =
+//     await transaction.get(registrationRef);
+
+//   if (existingRegistration.exists()) {
+//     throw new Error("MOBILE_ALREADY_REGISTERED");
+//   }
+
+//   // Check duplicate UTR
+//   const existingUTR =
+//     await transaction.get(utrRef);
+
+//   if (existingUTR.exists()) {
+//     throw new Error("UTR_ALREADY_REGISTERED");
+//   }
+
+//   // Save mobile lock
+//   transaction.set(registrationRef, {
+//     mobile: normalizedMobile,
+//     playerDocId: playerRef.id,
+//     playerId: playerId,
+//     name: nameInput.value.trim(),
+//     registeredAt: Date.now()
+//   });
+
+//   // Save UTR lock
+//   transaction.set(utrRef, {
+//     utr: utrNumber,
+//     playerDocId: playerRef.id,
+//     playerId: playerId,
+//     name: nameInput.value.trim(),
+//     registeredAt: Date.now()
+//   });
+
+//   // Save player details
+//   transaction.set(playerRef, {
+//     playerId: playerId,
+//     name: nameInput.value.trim(),
+//     mobile: normalizedMobile,
+//     utr: utrNumber,
+//     role: roleInput.value,
+//     // batting: battingInput.value,
+//     // bowling: bowlingInput.value || "NA",
+//     // dob: dobInput.value,
+//     // address: addressInput.value.trim(),
+
+//     aadhaarNumber: aadhaarInput.value.trim(),
+// jerseySize: jerseyInput.value,
+// dob: dobInput.value,
+// pinCode: pinCodeInput.value,
+//     photo: photo64,
+//     receipt: receipt64,
+//     sold: false,
+//     createdAt: Date.now()
+//   });
+
+// });
+
 
 // console.log("Player registration completed!");
 
 
 
 // ✅ Save DOB permanently
-await setDoc(
-  doc(db, "playerBirthdays", normalizedMobile),
-  {
-    name: nameInput.value.trim(),
-    mobile: mobileInput.value.trim(),
-    dob: dobInput.value,
-    updatedAt: Date.now()
-  }
-);
 
-/* 🔔 SEND NOTIFICATION TO DASHBOARD */
+// Save birthday (non-critical operation)
+try {
 
-await addDoc(collection(db,"notifications"), {
-  title: "🆕 New Player Registered",
-  body: nameInput.value.trim() + " has registered for <Season-5></Season-5> 🏏",
-  time: Date.now(),
-  type: "player_registration"   // ✅ IMPORTANT
-});
+  await setDoc(
+    doc(db, "playerBirthdays", normalizedMobile),
+    {
+      name: nameInput.value.trim(),
+      mobile: normalizedMobile,
+      dob: dobInput.value,
+      updatedAt: Date.now()
+    }
+  );
+
+} catch (birthdayError) {
+
+  console.error("Birthday save failed:", birthdayError);
+
+}
+
+
+// Dashboard notification (non-critical operation)
+try {
+
+  await addDoc(collection(db, "notifications"), {
+    title: "🆕 New Player Registered",
+    body: nameInput.value.trim() +
+          " has registered for VMC Premier League 2026 🏏",
+    time: Date.now(),
+    type: "player_registration"
+  });
+
+} catch (notificationError) {
+
+  console.error("Notification failed:", notificationError);
+
+}
+// await setDoc(
+//   doc(db, "playerBirthdays", normalizedMobile),
+//   {
+//     name: nameInput.value.trim(),
+//     mobile: mobileInput.value.trim(),
+//     dob: dobInput.value,
+//     updatedAt: Date.now()
+//   }
+// );
+
+// /* 🔔 SEND NOTIFICATION TO DASHBOARD */
+
+// await addDoc(collection(db,"notifications"), {
+//   title: "🆕 New Player Registered",
+//   body: nameInput.value.trim() + " has registered for <Season-5></Season-5> 🏏",
+//   time: Date.now(),
+//   type: "player_registration"   // ✅ IMPORTANT
+// });
 
 
   loader.style.display="none";
@@ -1250,9 +1371,9 @@ document.getElementById("successScreen").style.display = "flex";
 startCelebration();
 
 
-setTimeout(()=>{
-  window.location.href="register.html";
-},8000);
+// setTimeout(()=>{
+//   window.location.href="register.html";
+// },8000);
 
 
 // Admin / Organiser: redirect to Dashboard after 8 seconds
@@ -1539,7 +1660,7 @@ function payGPay(){
 </script> -->
 
 
-<script>
+<!-- <script>
 const upiId = "8197901199@ybl";
 const name = "JP Boys Cricket";
 const amount = "800";
@@ -1588,7 +1709,7 @@ document.addEventListener("visibilitychange", () => {
   }
 
 });
-</script>
+</script> -->
 
 
 </body>
